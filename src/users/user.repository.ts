@@ -3,6 +3,7 @@ import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpDto } from "./dto/signUp.dto";
 import { User } from "./user.entity";
 import { userRoles } from "./userRoles.enum";
+import * as bcrypt from "bcrypt";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
@@ -12,10 +13,10 @@ export class UserRepository extends Repository<User>{
     async signUp(signUpDto:SignUpDto) : Promise<void>{
         const {username, password} = signUpDto;
         const user = new User();
+        user.salt = await bcrypt.genSalt();
         user.username = username,
-        user.password = password;
+        user.password = await this.hashPassword(password, user.salt);
         user.role = userRoles.USER;
-        user.salt = "123"
         try{
             await user.save();
         }
@@ -26,5 +27,8 @@ export class UserRepository extends Repository<User>{
                 throw new InternalServerErrorException();
             }
         }
+    }
+    async hashPassword(password : string, salt : string) : Promise<string>{
+        return bcrypt.hash(password, salt);
     }
 }
