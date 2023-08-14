@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FilterOperator, FilterSuffix, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/users/user.entity';
 import { UserRepository } from 'src/users/user.repository';
 import { userRoles } from 'src/users/userRoles.enum';
@@ -33,6 +34,37 @@ export class PostService {
         }
         
     }
+
+    public getPostsPaginated(user:User, query: PaginateQuery): Promise<Paginated<Post>> {
+        if(user.role === userRoles.ADMIN){
+            return paginate(query, this.postRepository, {
+              sortableColumns: ['id', 'publicationDate', 'title', 'content'],
+              nullSort: 'last',
+              defaultSortBy: [['id', 'DESC']],
+              searchableColumns: ['title', 'content'],
+              select: ['id', 'publicationDate', 'title', 'content', 'authorId'],
+              filterableColumns: {
+                name: [FilterOperator.EQ, FilterSuffix.NOT],
+                age: true,
+              },
+            })
+        }
+        else{
+            return paginate(query, this.postRepository, {
+                where : {authorId : user.id},
+              sortableColumns: ['id', 'publicationDate', 'title', 'content'],
+              nullSort: 'last',
+              defaultSortBy: [['id', 'DESC']],
+              searchableColumns: ['title', 'content'],
+              select: ['id', 'publicationDate', 'title', 'content', 'authorId'],
+              filterableColumns: {
+                name: [FilterOperator.EQ, FilterSuffix.NOT],
+                age: true,
+              },
+            })
+          }
+        }
+        
 
     async getPosts(user : User){
         if(user.role === userRoles.ADMIN){
