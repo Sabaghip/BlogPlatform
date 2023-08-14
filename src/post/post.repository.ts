@@ -1,6 +1,7 @@
 import { BadRequestException, InternalServerErrorException} from "@nestjs/common";
 import { title } from "process";
 import { User } from "src/users/user.entity";
+import { userRoles } from "src/users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";
