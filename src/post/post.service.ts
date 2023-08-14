@@ -31,4 +31,13 @@ export class PostService {
         }
         
     }
+
+    async getPosts(user : User){
+        if(user.role === "ADMIN"){
+            return this.postRepository.find()
+        }
+        else{
+            return this.postRepository.find({where :{ authorId : user.id }})
+        }
+    }
 }

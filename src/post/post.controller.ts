@@ -32,4 +32,9 @@ export class PostController {
         return this.postService.deletePost(id, user);
     }
 
+    @Post("/getPosts")
+    getPosts(@GetUser() user : User){
+        return this.postService.getPosts(user);
+    }
+
 }
