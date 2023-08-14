@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
+import { UserRepository } from 'src/users/user.repository';
 import { userRoles } from 'src/users/userRoles.enum';
+import { resourceLimits } from 'worker_threads';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
 import { PostRepository } from './post.repository';
@@ -33,13 +35,38 @@ export class PostService {
     }
 
     async getPosts(user : User){
-        if(user.role === "ADMIN"){
-            return this.postRepository.find()
+        if(user.role === userRoles.ADMIN){
+            return await this.postRepository.find()
         }
         else{
-            return this.postRepository.find({where :{ authorId : user.id }})
+            return await this.postRepository.find({where :{ authorId : user.id }})
         }
     }
 
-    
+    async getPostById(id:number, user:User){
+        if(user.role === userRoles.ADMIN){
+            const result = await this.postRepository.findOne({where : {id}});
+            if(!result){
+                throw new NotFoundException(`there is no post with id = ${id}`)
+            }
+            return result;
+        }
+        else{
+            const result = await this.postRepository.findOne({where :{ id, authorId : user.id }});
+            if(!result){
+                throw new NotFoundException(`you dont have any post with id = ${id}`)
+            }
+            return result;
+        }
+    }
+
+    async editPost(id:number, createPostDto:CreatePostDto, user:User):Promise<Post>{
+        const post = await this.getPostById(id, user);
+        const { title, content } = createPostDto;
+        post.title = title;
+        post.content = content;
+        await post.save();
+        delete post.author;
+        return post;
+    }
 }

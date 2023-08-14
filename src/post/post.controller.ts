@@ -1,4 +1,4 @@
-import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete } from '@nestjs/common';
+import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IsNumber } from 'class-validator';
 import { User } from 'src/users/user.entity';
@@ -36,5 +36,16 @@ export class PostController {
     getPosts(@GetUser() user : User){
         return this.postService.getPosts(user);
     }
+
+    @Patch("/:id/editpost")
+    editPost(
+        @Param("id",new ParseIntPipe) id,
+        @GetUser() user : User,
+        @Body(ValidationPipe) createPostDto : CreatePostDto,
+        ){
+            return this.postService.editPost(id, createPostDto, user);
+
+    }
+
 
 }
