@@ -22,4 +22,5 @@ export class PostRepository extends Repository<Post>{
         delete post.author;
         return post
     }
+    
 }

@@ -2,21 +2,23 @@ import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe } from '@
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
+import { GetUser } from './dto/getUser.decorator';
 import { Post as PostEntity} from './post.entity';
 import { PostService } from './post.service';
 
 @Controller('post')
-
+@UseGuards(AuthGuard())
 export class PostController {
     constructor(
         private postService : PostService,
     ){}
 
     @Post("/createPost")
-    @UseGuards(AuthGuard())
-    test(@Req() req,
-    @Body(ValidationPipe)createPostDto : CreatePostDto,
+    test(
+        @GetUser() user,
+        @Body(ValidationPipe)createPostDto : CreatePostDto,
     ) : Promise<PostEntity>{
-        return this.postService.createPost(createPostDto, req.user);
+        console.log(user)
+        return this.postService.createPost(createPostDto, user);
     }
 }
