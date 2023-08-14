@@ -4,6 +4,7 @@ import { SignUpDto } from "./dto/signUp.dto";
 import { User } from "./user.entity";
 import { userRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
+import { SignInDto } from "./dto/signInDto.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
@@ -28,7 +29,17 @@ export class UserRepository extends Repository<User>{
             }
         }
     }
+
+    async signIn(signInDto : SignInDto):Promise<string>{
+        const {username, password} = signInDto;
+        const user = await this.findOne({where : {username:username}})
+        if(user && await user.validatePassword(password)){
+            return user.username;
+        }
+        return null
+    } 
+
     async hashPassword(password : string, salt : string) : Promise<string>{
-        return bcrypt.hash(password, salt);
+        return await bcrypt.hash(password, salt);
     }
 }

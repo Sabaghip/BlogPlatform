@@ -1,6 +1,6 @@
 import { IsIn } from "class-validator";
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
-
+import * as bcrypt from "bcrypt";
 import { userRoles } from "./userRoles.enum";
 
 @Entity()
@@ -21,4 +21,11 @@ export class User extends BaseEntity{
     @Column()
     @IsIn([userRoles.ADMIN, userRoles.USER])
     role : userRoles;
+
+    async validatePassword(password : string):Promise<boolean>{
+        if (this.password === await bcrypt.hash(password, this.salt)){
+            return true;
+        }
+        return false;
+    }
 }
