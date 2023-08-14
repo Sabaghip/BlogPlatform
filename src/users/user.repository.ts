@@ -30,11 +30,11 @@ export class UserRepository extends Repository<User>{
         }
     }
 
-    async signIn(signInDto : SignInDto):Promise<string>{
+    async signIn(signInDto : SignInDto):Promise<User>{
         const {username, password} = signInDto;
         const user = await this.findOne({where : {username:username}})
         if(user && await user.validatePassword(password)){
-            return user.username;
+            return user;
         }
         return null
     } 
