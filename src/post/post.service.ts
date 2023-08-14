@@ -40,4 +40,6 @@ export class PostService {
             return this.postRepository.find({where :{ authorId : user.id }})
         }
     }
+
+    
 }

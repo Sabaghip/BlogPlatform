@@ -1,4 +1,4 @@
-import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IsNumber } from 'class-validator';
 import { User } from 'src/users/user.entity';
@@ -24,7 +24,7 @@ export class PostController {
         return this.postService.createPost(createPostDto, user);
     }
 
-    @Post("/:id/deletePost")
+    @Delete("/:id/deletePost")
     deletePost(
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
