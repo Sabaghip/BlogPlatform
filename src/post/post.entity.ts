@@ -1,5 +1,6 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "src/users/user.entity";
+import {Comment} from "src/comment/comment.entity"
 
 @Entity()
 export class Post extends BaseEntity{
@@ -23,4 +24,7 @@ export class Post extends BaseEntity{
 
     @Column()
     tags : string;
+
+    @OneToMany(type => Comment, comment => comment.post, { eager : true })
+    comments : Comment[];
 }
