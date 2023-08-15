@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseIntPipe, Post, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Param, ParseIntPipe, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/post/dto/getUser.decorator';
 import { User } from 'src/users/user.entity';
@@ -20,5 +20,13 @@ export class CommentController {
         ){
             return this.commentService.createComment(createCommentDto, postid, user);
         }
-
+    
+    @Patch("/:id/editComment")
+    editComment(
+        @Param("id", new ParseIntPipe) id:number,
+        @GetUser() user : User,
+        @Body(ValidationPipe) createCommentDto : CreateCommentDto,
+    ){
+        return this.commentService.editComment(id,  createCommentDto ,user);
+    }
 }
