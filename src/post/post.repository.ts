@@ -1,4 +1,4 @@
-import { BadRequestException, InternalServerErrorException} from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, NotFoundException} from "@nestjs/common";
 import { title } from "process";
 import { User } from "src/users/user.entity";
 import { userRoles } from "src/users/userRoles.enum";
@@ -23,6 +23,23 @@ export class PostRepository extends Repository<Post>{
         await post.save();
         delete post.author;
         return post
+    }
+
+    async getPostById(id:number, user:User){
+        if(user.role === userRoles.ADMIN){
+            const result = await this.findOne({where : {id}});
+            if(!result){
+                throw new NotFoundException(`there is no post with id = ${id}`)
+            }
+            return result;
+        }
+        else{
+            const result = await this.findOne({where :{ id, authorId : user.id }});
+            if(!result){
+                throw new NotFoundException(`you dont have any post with id = ${id}`)
+            }
+            return result;
+        }
     }
     
 }

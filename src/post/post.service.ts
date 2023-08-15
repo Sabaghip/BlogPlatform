@@ -2,9 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterOperator, FilterSuffix, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/users/user.entity';
-import { UserRepository } from 'src/users/user.repository';
 import { userRoles } from 'src/users/userRoles.enum';
-import { resourceLimits } from 'worker_threads';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
 import { PostRepository } from './post.repository';
@@ -35,9 +33,9 @@ export class PostService {
         
     }
 
-    public getPostsPaginated(user:User, query: PaginateQuery): Promise<Paginated<Post>> {
+    async getPostsPaginated(user:User, query: PaginateQuery): Promise<Paginated<Post>> {
         if(user.role === userRoles.ADMIN){
-            return paginate(query, this.postRepository, {
+            return await paginate(query, this.postRepository, {
               sortableColumns: ['id', 'publicationDate', 'title', 'content'],
               nullSort: 'last',
               defaultSortBy: [['id', 'DESC']],
@@ -50,7 +48,7 @@ export class PostService {
             })
         }
         else{
-            return paginate(query, this.postRepository, {
+            return await paginate(query, this.postRepository, {
                 where : {authorId : user.id},
               sortableColumns: ['id', 'publicationDate', 'title', 'content'],
               nullSort: 'last',
@@ -75,25 +73,8 @@ export class PostService {
         }
     }
 
-    async getPostById(id:number, user:User){
-        if(user.role === userRoles.ADMIN){
-            const result = await this.postRepository.findOne({where : {id}});
-            if(!result){
-                throw new NotFoundException(`there is no post with id = ${id}`)
-            }
-            return result;
-        }
-        else{
-            const result = await this.postRepository.findOne({where :{ id, authorId : user.id }});
-            if(!result){
-                throw new NotFoundException(`you dont have any post with id = ${id}`)
-            }
-            return result;
-        }
-    }
-
     async editPost(id:number, createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
-        const post = await this.getPostById(id, user);
+        const post = await this.postRepository.getPostById(id, user);
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
