@@ -1,6 +1,4 @@
-import { IsIn, isNotEmpty } from "class-validator";
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import * as bcrypt from "bcrypt";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "src/users/user.entity";
 
 @Entity()
@@ -23,6 +21,6 @@ export class Post extends BaseEntity{
     @CreateDateColumn()
     publicationDate : Date
 
-    // @Column()
-    // tags : string[]
+    @Column()
+    tags : string;
 }

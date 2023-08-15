@@ -16,8 +16,8 @@ export class PostService {
         private postRepository : PostRepository,
     ){}
 
-    async createPost(createPostDto : CreatePostDto, user:User): Promise<Post>{
-        return await this.postRepository.createPost(createPostDto, user);
+    async createPost(createPostDto : CreatePostDto, user:User, tags:string): Promise<Post>{
+        return await this.postRepository.createPost(createPostDto, user, tags);
     }
 
     async deletePost(id:number, user:User){
@@ -42,7 +42,7 @@ export class PostService {
               nullSort: 'last',
               defaultSortBy: [['id', 'DESC']],
               searchableColumns: ['title', 'content'],
-              select: ['id', 'publicationDate', 'title', 'content', 'authorId'],
+              select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
               filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
                 age: true,
@@ -56,7 +56,7 @@ export class PostService {
               nullSort: 'last',
               defaultSortBy: [['id', 'DESC']],
               searchableColumns: ['title', 'content'],
-              select: ['id', 'publicationDate', 'title', 'content', 'authorId'],
+              select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
               filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
                 age: true,
@@ -92,11 +92,12 @@ export class PostService {
         }
     }
 
-    async editPost(id:number, createPostDto:CreatePostDto, user:User):Promise<Post>{
+    async editPost(id:number, createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
         const post = await this.getPostById(id, user);
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
+        post.tags = tags;
         await post.save();
         delete post.author;
         return post;

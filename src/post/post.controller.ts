@@ -7,6 +7,7 @@ import { IntegerType } from 'typeorm';
 import { CreatePostDto } from './dto/createPost.dto';
 import { GetUser } from './dto/getUser.decorator';
 import { PostIdDto } from './dto/post-id.dto';
+import { TagsPipe } from './Pipes/tags.pipe';
 import { Post as PostEntity} from './post.entity';
 import { PostService } from './post.service';
 
@@ -21,8 +22,9 @@ export class PostController {
     createPost(
         @GetUser() user,
         @Body(ValidationPipe)createPostDto : CreatePostDto,
+        @Body("tags", TagsPipe) tags : string,
     ) : Promise<PostEntity>{
-        return this.postService.createPost(createPostDto, user);
+        return this.postService.createPost(createPostDto, user, tags);
     }
 
     @Delete("/:id/deletePost")
@@ -48,8 +50,9 @@ export class PostController {
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
         @Body(ValidationPipe) createPostDto : CreatePostDto,
+        @Body("tags", TagsPipe) tags : string,
         ){
-            return this.postService.editPost(id, createPostDto, user);
+            return this.postService.editPost(id, createPostDto, user, tags);
 
     }
 
