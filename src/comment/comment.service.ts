@@ -22,4 +22,8 @@ export class CommentService {
     async editComment(id : number, createCommentDto : CreateCommentDto,  user : User):Promise<Comment>{
         return await this.commentRepository.editComment(createCommentDto, id, user);
     }
+
+    async deleteComment(id : number, user : User){
+        await this.commentRepository.deleteComment(id, user);
+    }
 }

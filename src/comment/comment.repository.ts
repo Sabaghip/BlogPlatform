@@ -24,7 +24,7 @@ export class CommentRepository extends Repository<Comment>{
         return comment;
     }
 
-    async getCommentById(id:number, user:User):Promise<Comment>{
+    async getCommentByIdForDelete(id:number, user:User):Promise<Comment>{
         if(user.role === userRoles.ADMIN){
             const comment = await this.findOne({where : {id}});
             if(!comment){
@@ -55,5 +55,10 @@ export class CommentRepository extends Repository<Comment>{
         await comment.save();
         delete comment.author
         return comment;
+    }
+
+    async deleteComment(id, user : User){
+        const comment = await this.getCommentByIdForDelete(id, user);
+        await this.delete({id})
     }
 }
