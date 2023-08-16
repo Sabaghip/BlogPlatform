@@ -1,4 +1,4 @@
-import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { BadRequestException, InternalServerErrorException, Logger } from "@nestjs/common";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpDto } from "./dto/signUp.dto";
 import { User } from "./user.entity";
@@ -8,6 +8,7 @@ import { SignInDto } from "./dto/signInDto.dto";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
+    private logger = new Logger("UserRepository")
     constructor(private dataSource: DataSource) {
         super(User, dataSource.createEntityManager());
     }
@@ -23,8 +24,10 @@ export class UserRepository extends Repository<User>{
         }
         catch(err){
             if(err.code === "23505"){
+                this.logger.verbose(`Cannot sign up as user because username "${signUpDto.username}" is in use `)
                 throw new BadRequestException("username is in use");
             }else{
+                this.logger.error(`Failed to create new user with username = "${signUpDto.username}"`, err.stack)
                 throw new InternalServerErrorException();
             }
         }
@@ -32,7 +35,13 @@ export class UserRepository extends Repository<User>{
 
     async signIn(signInDto : SignInDto):Promise<User>{
         const {username, password} = signInDto;
-        const user = await this.findOne({where : {username:username}})
+        let user;
+        try{
+            user = await this.findOne({where : {username:username}})
+        }catch(err){
+            this.logger.error(`Failed sign in as user. username : ${signInDto.username}`, err.stack)
+            throw err;
+        }
         if(user && await user.validatePassword(password)){
             return user;
         }
@@ -40,6 +49,10 @@ export class UserRepository extends Repository<User>{
     } 
 
     async hashPassword(password : string, salt : string) : Promise<string>{
-        return await bcrypt.hash(password, salt);
+        try{
+            return await bcrypt.hash(password, salt);
+        }catch(err){
+            this.logger.error(`Failed to hash password.`, err.stack)
+        }
     }
 }

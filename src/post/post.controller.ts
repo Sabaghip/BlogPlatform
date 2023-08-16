@@ -1,12 +1,9 @@
-import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch } from '@nestjs/common';
+import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { IsNumber } from 'class-validator';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/users/user.entity';
-import { IntegerType } from 'typeorm';
 import { CreatePostDto } from './dto/createPost.dto';
 import { GetUser } from './dto/getUser.decorator';
-import { PostIdDto } from './dto/post-id.dto';
 import { TagsPipe } from './Pipes/tags.pipe';
 import { Post as PostEntity} from './post.entity';
 import { PostService } from './post.service';
@@ -14,6 +11,7 @@ import { PostService } from './post.service';
 @Controller('post')
 @UseGuards(AuthGuard())
 export class PostController {
+    private logger = new Logger("PostController")
     constructor(
         private postService : PostService,
     ){}
@@ -24,7 +22,15 @@ export class PostController {
         @Body(ValidationPipe)createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
     ) : Promise<PostEntity>{
-        return this.postService.createPost(createPostDto, user, tags);
+        this.logger.verbose(`"${user.username}" trying to create a post.`)
+        let result;
+        try{
+            result = this.postService.createPost(createPostDto, user, tags);
+            return result;
+        }catch(err){
+            this.logger.error("Failed to create post.", err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 
     @Delete("/:id/deletePost")
@@ -32,17 +38,41 @@ export class PostController {
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
         ){
-        return this.postService.deletePost(id, user);
+            this.logger.verbose(`"${user.username}" trying to delete a post.`)
+            let result;
+            try{
+                result = this.postService.deletePost(id, user);
+                return result
+            }catch(err){
+                this.logger.error("Failed to delete post.", err.stack)
+                throw new InternalServerErrorException()
+            }
     }
 
     @Post("/getPosts")
     getPosts(@GetUser() user : User){
-        return this.postService.getPosts(user);
+        this.logger.verbose(`"${user.username}" trying to get posts.`)
+        let result;
+        try{
+            result = this.postService.getPosts(user);
+            return result;
+        }catch(err){
+            this.logger.error("Failed to get posts.", err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 
     @Post("/getPostsPaginated")
     getPostsPaginated(@GetUser() user : User, @Paginate() query: PaginateQuery){
-        return this.postService.getPostsPaginated(user, query);
+        this.logger.verbose(`"${user.username}" trying to get paginated posts.`)
+        let result;
+        try{
+            result = this.postService.getPostsPaginated(user, query);
+            return result;
+        }catch(err){
+            this.logger.error("Failed to get paginated posts.", err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 
     @Patch("/:id/editpost")
@@ -52,7 +82,15 @@ export class PostController {
         @Body(ValidationPipe) createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
         ){
-            return this.postService.editPost(id, createPostDto, user, tags);
+            this.logger.verbose(`"${user.username}" trying to edit a post.`)
+            let result;
+            try{
+                result = this.postService.editPost(id, createPostDto, user, tags);
+                return result;
+            }catch(err){
+                this.logger.error("Failed to edit a post.", err.stack)
+                throw new InternalServerErrorException()
+        }
 
     }
 

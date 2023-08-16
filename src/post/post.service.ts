@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterOperator, FilterSuffix, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/users/user.entity';
@@ -9,6 +9,7 @@ import { PostRepository } from './post.repository';
 
 @Injectable()
 export class PostService {
+    private logger = new Logger("PostService")
     constructor(
         @InjectRepository(PostRepository)
         private postRepository : PostRepository,
@@ -18,69 +19,62 @@ export class PostService {
         return await this.postRepository.createPost(createPostDto, user, tags);
     }
 
-    async deletePost(id:number, user:User){
-        if(user.role === userRoles.ADMIN){
-            const result = await this.postRepository.delete({id})
-            if(result.affected === 0){
-                throw new NotFoundException(`there is no post with id = ${id}`)
-            }
-        }else{
-            const result = await this.postRepository.delete({id, authorId: user.id});
-            if(result.affected === 0){
-                throw new NotFoundException(`You dont have any post with id = ${id}`);
-            }
-        }
-        
+    async deletePost(id:number, user:User):Promise<Post>{
+        const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
+        await this.postRepository.delete({id})
+        return post
     }
 
     async getPostsPaginated(user:User, query: PaginateQuery): Promise<Paginated<Post>> {
-        if(user.role === userRoles.ADMIN){
-            return await paginate(query, this.postRepository, {
-              sortableColumns: ['id', 'publicationDate', 'title', 'content'],
-              nullSort: 'last',
-              defaultSortBy: [['id', 'DESC']],
-              searchableColumns: ['title', 'content'],
-              select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
-              filterableColumns: {
+        let result;
+        try{
+            result =  await paginate(query, this.postRepository, {
+                sortableColumns: ['id', 'publicationDate', 'title', 'content'],
+                nullSort: 'last',
+                defaultSortBy: [['id', 'DESC']],
+                searchableColumns: ['title', 'content'],
+                select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
+                filterableColumns: {
                 name: [FilterOperator.EQ, FilterSuffix.NOT],
                 age: true,
-              },
+                },
             })
+            this.logger.verbose(`"${user.username}" got paginated posts.`)
+            return result;
         }
-        else{
-            return await paginate(query, this.postRepository, {
-                where : {authorId : user.id},
-              sortableColumns: ['id', 'publicationDate', 'title', 'content'],
-              nullSort: 'last',
-              defaultSortBy: [['id', 'DESC']],
-              searchableColumns: ['title', 'content'],
-              select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
-              filterableColumns: {
-                name: [FilterOperator.EQ, FilterSuffix.NOT],
-                age: true,
-              },
-            })
-          }
+        catch(err){
+            this.logger.error("Failed to get paginated posts.", err.stack)
+            throw new InternalServerErrorException()
         }
+    }
         
 
     async getPosts(user : User){
-        if(user.role === userRoles.ADMIN){
-            return await this.postRepository.find()
+        let result;
+        try{
+            result = await this.postRepository.find();
+            this.logger.verbose(`"${user.username}" got posts.`)
+            return result
+        }catch(err){
+            this.logger.error("Failed to get posts.", err.stack)
+            throw new InternalServerErrorException()
         }
-        else{
-            return await this.postRepository.find({where :{ authorId : user.id }})
-        }
+
     }
 
     async editPost(id:number, createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
-        const post = await this.postRepository.getPostById(id, user);
+        const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
         post.tags = tags;
-        await post.save();
-        delete post.author;
-        return post;
+        try{
+            await post.save();
+            delete post.author;
+            return post;
+        }catch(err){
+            this.logger.error(`Failed to edit post with id = ${id}`, err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 }
