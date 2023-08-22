@@ -1,11 +1,12 @@
-import { BaseEntity, Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "src/users/user.entity";
 import {Comment} from "src/comment/comment.entity"
+import { Tag } from "./tag.entity";
 
 @Entity()
 export class Post extends BaseEntity{
     @PrimaryGeneratedColumn()
-    id : number;
+    postId : number;
 
     @Column()
     title : string;
@@ -22,9 +23,18 @@ export class Post extends BaseEntity{
     @CreateDateColumn()
     publicationDate : Date
 
-    @Column()
-    tags : string;
 
     @OneToMany(type => Comment, comment => comment.post, { eager : true })
     comments : Comment[];
+
+    @ManyToMany(type => Tag, tag => tag.id, {eager : true})
+    @JoinTable({name : "post_tag", joinColumn: {
+        name: 'postId',
+        referencedColumnName: 'postId',
+      },
+      inverseJoinColumn: {
+        name: 'tagId',
+        referencedColumnName: 'id',
+      },})
+    tags : Tag[]
 }

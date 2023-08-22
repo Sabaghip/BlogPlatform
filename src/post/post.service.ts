@@ -21,7 +21,7 @@ export class PostService {
 
     async deletePost(id:number, user:User):Promise<Post>{
         const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
-        await this.postRepository.delete({id})
+        await this.postRepository.delete({postId : id})
         return post
     }
 
@@ -29,14 +29,15 @@ export class PostService {
         let result;
         try{
             result =  await paginate(query, this.postRepository, {
-                sortableColumns: ['id', 'publicationDate', 'title', 'content'],
+                loadEagerRelations: true,
+                sortableColumns: ['postId', 'publicationDate', 'title', 'content', "tags.content"],
                 nullSort: 'last',
-                defaultSortBy: [['id', 'DESC']],
+                defaultSortBy: [['postId', 'DESC']],
                 searchableColumns: ['title', 'content'],
-                select: ['id', 'publicationDate', 'title', 'content', 'authorId', 'tags'],
+                // select: ['postId', 'publicationDate', 'title', 'content', 'authorId', "tags.content"],
                 filterableColumns: {
-                name: [FilterOperator.EQ, FilterSuffix.NOT],
-                age: true,
+                'tags.content': [FilterOperator.IN],
+                loadEagerRelations: true,
                 },
             })
             this.logger.verbose(`"${user.username}" got paginated posts.`)
@@ -52,7 +53,7 @@ export class PostService {
     async getPosts(user : User){
         let result;
         try{
-            result = await this.postRepository.find();
+            result = await this.postRepository.find({relations : ["tags"]});
             this.logger.verbose(`"${user.username}" got posts.`)
             return result
         }catch(err){
