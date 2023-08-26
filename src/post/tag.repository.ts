@@ -16,11 +16,24 @@ export class TagRepository extends Repository<Tag>{
     }
 
     async createTag(content:string):Promise<Tag>{
-        const tag = await this.findOne({where : {content : content}})
+        let tag;
+        try{
+            tag = await this.findOne({where : {content : content}})
+        }
+        catch(err){
+            this.logger.error("Failed to get tag from repository", err.stack);
+            throw new InternalServerErrorException()
+        }
         if(!tag){
             const tag = new Tag()
             tag.content = content
-            await tag.save()
+            try{
+                await tag.save()
+            }
+            catch(err){
+                this.logger.error("Failed to create tag in tag repository", err.stack);
+                throw new InternalServerErrorException()
+            }
             return tag
         }
         return tag;
