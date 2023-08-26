@@ -1,0 +1,467 @@
+openapi: 3.0.3
+info:
+  title: Blog Post Project
+  description: |-
+    This is an API for managing a service of Blog Post.
+  contact:
+    email: sabaghi.p@gmail.com
+  version: 1.0.1
+servers:
+  - url: http://localhost:3000/
+tags:
+  - name: Post
+    description: Everything about Posts
+  - name: User
+    description: Operaion about users
+  - name: Comment
+    description: Everything about comments
+paths:
+  /post/{postId}/editpost:
+    patch:
+      tags:
+        - Post
+      summary: Update an existing Post
+      description: Update an existing Post by Id
+      operationId: updatePost
+      parameters:
+        - name: postId
+          in: path
+          description: ID of post to edit
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent post in the blog
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditPost'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Body parameters are invalid.
+        '404':
+          description: Post not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /post/createpost:
+    post:
+      tags:
+        - Post
+      summary: Create new Post
+      operationId: createpost
+      requestBody:
+        description: Create new Post
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePost'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'          
+        '400':
+          description: Body parameters are invalid.
+        '404':
+          description: Post not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /post/{postId}/deletepost:
+    delete:
+      tags:
+        - Post
+      summary: Delete an existing Post
+      description: Delete an existing Post by Id
+      operationId: deletePost
+      parameters:
+        - name: postId
+          in: path
+          description: ID of post to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '404':
+          description: Post not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+
+  /post/getPosts:
+    get:
+      tags:
+        - Post
+      summary: Get all existing Posts
+      description: Get all existing Posts
+      operationId: getPosts
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/Post'
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /post/getpostsPaginated:
+    get:
+      tags:
+        - Post
+      summary: Get all existing Posts with pagination
+      description: Get all existing Posts with pagination
+      operationId: getPostsWitjPagination
+      parameters:
+        - name: limit
+          in: query
+          description: Limit of posts in a page
+          required: false
+          schema:
+            type: integer
+        - name: page
+          in: query
+          description: Page number of posts
+          required: false
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/Post'
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /user/signup:
+    post:
+      tags:
+        - User
+      summary: Sign up
+      description: Sign up a new user
+      operationId: signUp
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SignUp'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+        '400':
+          description: Invalid creditionals
+          
+  /user/signin:
+    post:
+      tags:
+        - User
+      summary: Sign in
+      description: Sign in as an existent user
+      operationId: signIn
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SignIn'
+        required: true
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/accessToken'
+        '401':
+          description: Unauthorized
+          
+  /comment/{commentId}/editcomment:
+    patch:
+      tags:
+        - Comment
+      summary: Update an existing Comment
+      description: Update an existing Comment by Id
+      operationId: updateComment
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of comment to edit
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Update an existent comment in the blog
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EditComment'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '400':
+          description: Body parameters are invalid.
+        '404':
+          description: Comment not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /comment/{postId}/createComment:
+    post:
+      tags:
+        - Comment
+      summary: Create new comment
+      operationId: createComment
+      parameters:
+        - name: postId
+          in: path
+          description: ID of post to add a comment to it
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Create new Comment
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreateComment'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'          
+        '400':
+          description: Body parameters are invalid.
+        '404':
+          description: Post not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /comment/{commentId}/deleteComment:
+    delete:
+      tags:
+        - Comment
+      summary: Delete an existing Comment
+      description: Delete an existing Comment by Id
+      operationId: deleteComment
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of Comment to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Comment not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+
+          
+
+components:
+  schemas:
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        content:
+          type: string
+          example: "tag1"
+      xml:
+        name: tag
+    EditPost:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Title1"
+        content:
+          type: string
+          example: "content1"
+        tags:
+          type: string
+          example: '["t1", "t2"]'
+      xml:
+        name: editpost
+    CreatePost:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Title1"
+        content:
+          type: string
+          example: "content1"
+        tags:
+          type: string
+          example: '["t1", "t2"]'
+      xml:
+        name: createpost
+    Post:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Title1"
+        content:
+          type: string
+          example: "content1"
+        tags:
+          type: array
+          items: 
+          $ref: '#/components/schemas/Tag'
+          example: [
+        {
+            "id": 2,
+            "content": "t3"
+        },
+        {
+            "id": 3,
+            "content": "t4"
+        }
+    ]
+        authorId:
+          type: integer
+          example: 1
+        postId:
+          type: integer
+          example: 3
+        publicationDate:
+          type: string
+          example: "2023-08-24T11:05:35.847Z"
+      xml:
+        name: post
+        
+    Posts:
+      type: array
+      items:
+      $ref: '#/components/schemas/Post'
+      example: []
+      xml:
+        name: posts
+        
+    SignUp:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: "parsa"
+        password:
+          type: string
+          example: "Password123"
+      xml:
+        name: signUp
+        
+    SignIn:
+      type: object
+      properties:
+        userName:
+          type: string
+          example: "parsa"
+        password:
+          type: string
+          example: "Password123"
+      xml:
+        name: signIn
+        
+    accessToken:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InBhcnNhMSIsInJvbGUiOiJVU0VSIiwiaWF0IjoxNjkyOTY3MDA3LCJleHAiOjE2OTI5NzA2MDd9.REihh2_M7L3MfUjkTf_sBj83LQQB-pdKTDiWLj0hry8s"
+      xml:
+        name: accessToken
+        
+    EditComment:
+      type: object
+      properties:
+        content:
+          type: string
+          example: "comment content1"
+      xml:
+        name: editcomment
+    CreateComment:
+      type: object
+      properties:
+        content:
+          type: string
+          example: "comment content1"
+      xml:
+        name: createcomment
+    Comment:
+      type: object
+      properties:
+        content:
+          type: string
+          example: "comment content1"
+        post:
+          type: 
+          $ref: '#/components/schemas/Post' 
+        authorId:
+          type: integer
+          example: 1
+        id:
+          type: integer
+          example: 3
+        publicationDate:
+          type: string
+          example: "2023-08-24T11:05:35.847Z"
+      xml:
+        name: comment
+        
+  securitySchemes:
+    userAuth:
+      type: apiKey
+      name : userAuth
+      in: header
+      description: "Enter the token with the `Bearer: ` prefix, e.g. 'Bearer abcde12345'."

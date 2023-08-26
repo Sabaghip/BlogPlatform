@@ -1,4 +1,4 @@
-import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException } from '@nestjs/common';
+import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { User } from 'src/users/user.entity';
@@ -49,7 +49,7 @@ export class PostController {
             }
     }
 
-    @Post("/getPosts")
+    @Get("/getPosts")
     getPosts(@GetUser() user : User){
         this.logger.verbose(`"${user.username}" trying to get posts.`)
         let result;
