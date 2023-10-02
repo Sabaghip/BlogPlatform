@@ -1,6 +1,7 @@
 import { BadRequestException, InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { title } from "process";
+import { PostExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { User } from "src/users/user.entity";
 import { userRoles } from "src/users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
@@ -31,28 +32,11 @@ export class PostRepository extends Repository<Post>{
             let tag = await this.tagRepository.createTag(tags[i])
             post.tags.push(tag)
         }
-        try{
-            await post.save();
-            delete post.author;
-            return post
-        }catch(err){
-            this.logger.error("Failed to ceate a post in repository.", err.stack)
-        }
+        return PostExceptionHandler.createPostInRepositoryExceptionHandler(post, this.logger);
     }
 
     async getPostById(id:number, user:User){
-        let result
-        try{
-            result = await this.findOne({where : {postId : id}});
-        }catch(err){
-            this.logger.error("Failed to get post from repository", err.stack);
-            throw new InternalServerErrorException()
-        }
-        if(!result){
-            this.logger.verbose(`User "${user.username} tried to get post with id = ${id} but there is not any post with this id."`)
-            throw new NotFoundException(`there is no post with id = ${id}`)
-        }
-        return result;
+        return PostExceptionHandler.getPostByIdInRepositoryExceptionHandler(this, user,id, this.logger);
     }
     async getPostByIdForEditOrDelete(id:number, user:User){
         let result

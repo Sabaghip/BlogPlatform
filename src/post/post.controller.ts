@@ -1,6 +1,8 @@
 import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
+
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
+import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { User } from 'src/users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
 import { GetUser } from './dto/getUser.decorator';
@@ -22,15 +24,7 @@ export class PostController {
         @Body(ValidationPipe)createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
     ) : Promise<PostEntity>{
-        this.logger.verbose(`"${user.username}" trying to create a post.`)
-        let result;
-        try{
-            result = this.postService.createPost(createPostDto, user, tags);
-            return result;
-        }catch(err){
-            this.logger.error("Failed to create post.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return PostExceptionHandler.createPostExceptionHandler(this.postService, user, createPostDto, tags, this.logger)
     }
 
     @Delete("/:id/deletePost")
@@ -38,28 +32,12 @@ export class PostController {
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
         ){
-            this.logger.verbose(`"${user.username}" trying to delete a post.`)
-            let result;
-            try{
-                result = this.postService.deletePost(id, user);
-                return result
-            }catch(err){
-                this.logger.error("Failed to delete post.", err.stack)
-                throw new InternalServerErrorException()
-            }
+            return PostExceptionHandler.deletePostExceptionHandler(this.postService, user, id, this.logger);
     }
 
     @Get("/getPosts")
     getPosts(@GetUser() user : User){
-        this.logger.verbose(`"${user.username}" trying to get posts.`)
-        let result;
-        try{
-            result = this.postService.getPosts(user);
-            return result;
-        }catch(err){
-            this.logger.error("Failed to get posts.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return PostExceptionHandler.getPostsExceptionHandler(this.postService, user, this.logger);
     }
 
     @Post("/getPostsPaginated")
@@ -82,17 +60,6 @@ export class PostController {
         @Body(ValidationPipe) createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
         ){
-            this.logger.verbose(`"${user.username}" trying to edit a post.`)
-            let result;
-            try{
-                result = this.postService.editPost(id, createPostDto, user, tags);
-                return result;
-            }catch(err){
-                this.logger.error("Failed to edit a post.", err.stack)
-                throw new InternalServerErrorException()
-        }
-
+            PostExceptionHandler.editPostExceptionHandler(this.postService, user, id, createPostDto, tags, this.logger);
     }
-
-
 }

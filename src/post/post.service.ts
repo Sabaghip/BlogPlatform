@@ -1,6 +1,7 @@
 import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FilterOperator, FilterSuffix, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { User } from 'src/users/user.entity';
 import { userRoles } from 'src/users/userRoles.enum';
 import { CreatePostDto } from './dto/createPost.dto';
@@ -26,41 +27,11 @@ export class PostService {
     }
 
     async getPostsPaginated(user:User, query: PaginateQuery): Promise<Paginated<Post>> {
-        let result;
-        try{
-            result =  await paginate(query, this.postRepository, {
-                loadEagerRelations: true,
-                sortableColumns: ['postId', 'publicationDate', 'title', 'content', "tags.content"],
-                nullSort: 'last',
-                defaultSortBy: [['postId', 'DESC']],
-                searchableColumns: ['title', 'content'],
-                // select: ['postId', 'publicationDate', 'title', 'content', 'authorId', "tags.content"],
-                filterableColumns: {
-                'tags.content': [FilterOperator.IN],
-                loadEagerRelations: true,
-                },
-            })
-            this.logger.verbose(`"${user.username}" got paginated posts.`)
-            return result;
-        }
-        catch(err){
-            this.logger.error("Failed to get paginated posts.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return PostExceptionHandler.getPaginatedPostInServiceExceptionHandler(this.postRepository, user, query, this.logger);
     }
-        
 
     async getPosts(user : User){
-        let result;
-        try{
-            result = await this.postRepository.find({relations : ["tags"]});
-            this.logger.verbose(`"${user.username}" got posts.`)
-            return result
-        }catch(err){
-            this.logger.error("Failed to get posts.", err.stack)
-            throw new InternalServerErrorException()
-        }
-
+        return PostExceptionHandler.getPostsInServiceExceptionHandler(this.postRepository, user, this.logger);
     }
 
     async editPost(id:number, createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
@@ -69,13 +40,6 @@ export class PostService {
         post.title = title;
         post.content = content;
         post.tags = tags;
-        try{
-            await post.save();
-            delete post.author;
-            return post;
-        }catch(err){
-            this.logger.error(`Failed to edit post with id = ${id}`, err.stack)
-            throw new InternalServerErrorException()
-        }
+        return PostExceptionHandler.editPostsInServiceExceptionHandler(post, id, this.logger);
     }
 }

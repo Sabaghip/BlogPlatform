@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, InternalServerErrorException, Logger, Param, ParseIntPipe, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { CommentExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { GetUser } from 'src/post/dto/getUser.decorator';
 import { User } from 'src/users/user.entity';
 import { CommentService } from './comment.service';
@@ -19,15 +20,7 @@ export class CommentController {
         @Param("postid", new ParseIntPipe) postid : number,
         @GetUser() user : User, 
         ){
-            this.logger.verbose(`"${user.username}" trying to create a comment.`)
-            let result;
-            try{
-                result = this.commentService.createComment(createCommentDto, postid, user);
-                return result;
-            }catch(err){
-                this.logger.error(`Failed to create comment.`, err.stack)
-                throw new InternalServerErrorException()
-            }
+            return CommentExceptionHandler.createCommentExceptionHandler(this.commentService, user, createCommentDto, postid, this.logger);
         }
     
     @Patch("/:id/editComment")
@@ -36,15 +29,7 @@ export class CommentController {
         @GetUser() user : User,
         @Body(ValidationPipe) createCommentDto : CreateCommentDto,
     ){
-        this.logger.verbose(`"${user.username}" trying to edit a comment.`)
-            let result;
-            try{
-                result = this.commentService.editComment(id,  createCommentDto ,user);
-                return result;
-            }catch(err){
-                this.logger.error(`Failed to edit comment.`, err.stack)
-                throw new InternalServerErrorException()
-            }
+        return CommentExceptionHandler.editCommentExceptionHandler(this.commentService, user, id, createCommentDto, this.logger);
     }
 
     @Delete("/:id/deleteComment")

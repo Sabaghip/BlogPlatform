@@ -1,4 +1,5 @@
 import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { CommentExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { Post } from "src/post/post.entity";
 import { User } from "src/users/user.entity";
 import { userRoles } from "src/users/userRoles.enum";
@@ -20,14 +21,7 @@ export class CommentRepository extends Repository<Comment>{
         comment.author = user;
         comment.content = content;
         comment.post = post;
-        try {
-            await comment.save();
-            delete comment.author
-            return comment;
-        }catch(err){
-            this.logger.error("Failed to add comment to repository", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return CommentExceptionHandler.createCommentInRepositoryExceptionHandler(comment, this.logger);
     }
 
     async getCommentByIdForDelete(id:number, user:User):Promise<Comment>{
@@ -61,23 +55,11 @@ export class CommentRepository extends Repository<Comment>{
         const { content } = createCommentDto;
         const comment = await this.getCommentByIdForEdit(id, user);
         comment.content = content;
-        try{
-            await comment.save();
-            delete comment.author
-            return comment;
-        }catch(err){
-            this.logger.error("Failed to edit a comment in repository.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return CommentExceptionHandler.editCommentInRepositoryExceptionHandler(comment, this.logger);
     }
 
     async deleteComment(id, user : User){
         const comment = await this.getCommentByIdForDelete(id, user);
-        try{
-            await this.delete({id})
-        }catch(err){
-            this.logger.error("Failed to delete a comment from repository.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        return CommentExceptionHandler.deleteCommentInRepositoryExceptionHandler(this, id, this.logger);
     }
 }
