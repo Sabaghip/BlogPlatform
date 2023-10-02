@@ -1,4 +1,4 @@
-import { BadRequestException, InternalServerErrorException, Logger } from "@nestjs/common";
+import { Logger } from "@nestjs/common";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpDto } from "./dto/signUp.dto";
 import { User } from "./user.entity";
@@ -21,6 +21,7 @@ export class UserRepository extends Repository<User>{
         user.password = await this.hashPassword(password, user.salt);
         user.role = userRoles.USER;
         UserExceptionHandler.signUpInRepositoryExceptionHandler(user, signUpDto, this.logger);
+        return;
     }
 
     async signIn(signInDto : SignInDto):Promise<User>{

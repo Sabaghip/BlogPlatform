@@ -1,13 +1,11 @@
-import { BadRequestException, InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
+import { InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { title } from "process";
 import { PostExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { User } from "src/users/user.entity";
 import { userRoles } from "src/users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";
-import { Tag } from "./tag.entity";
 import { TagRepository } from "./tag.repository";
 
 

@@ -1,4 +1,4 @@
-import { InternalServerErrorException, Logger, NotFoundException } from "@nestjs/common";
+import { Logger, NotFoundException } from "@nestjs/common";
 import { CommentExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { Post } from "src/post/post.entity";
 import { User } from "src/users/user.entity";

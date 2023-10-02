@@ -1,9 +1,8 @@
-import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FilterOperator, FilterSuffix, paginate, Paginated, PaginateQuery } from 'nestjs-paginate';
+import {  Paginated, PaginateQuery } from 'nestjs-paginate';
 import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { User } from 'src/users/user.entity';
-import { userRoles } from 'src/users/userRoles.enum';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
 import { PostRepository } from './post.repository';

@@ -43,10 +43,10 @@ export class UserExceptionHandler {
         }
     }
 
-    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpDto, logger : Logger) : Promise<String>{
+    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpDto, logger : Logger) : Promise<void>{
         try{
             await user.save();
-            return user.username;
+            return ;
         }
         catch(err){
             if(err.code === "23505"){
