@@ -2,7 +2,7 @@ import { Logger, NotFoundException } from "@nestjs/common";
 import { CommentExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { Post } from "src/post/post.entity";
 import { User } from "src/users/user.entity";
-import { userRoles } from "src/users/userRoles.enum";
+import { UserRoles } from "src/users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { Comment } from "./comment.entity";
 import { CreateCommentDto } from "./dto/createComment.dto";
@@ -25,7 +25,7 @@ export class CommentRepository extends Repository<Comment>{
     }
 
     async getCommentByIdForDelete(id:number, user:User):Promise<Comment>{
-        if(user.role === userRoles.ADMIN){
+        if(user.role === UserRoles.ADMIN){
             const comment = await this.findOne({where : {id}});
             if(!comment){
                 this.logger.verbose(`Admin "${user.username} tried to delete comment with id = ${id}" but there is no comment with this id.`)

@@ -2,7 +2,7 @@ import { InternalServerErrorException, Logger, NotFoundException} from "@nestjs/
 import { InjectRepository } from "@nestjs/typeorm";
 import { PostExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
 import { User } from "src/users/user.entity";
-import { userRoles } from "src/users/userRoles.enum";
+import { UserRoles } from "src/users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";
@@ -39,7 +39,7 @@ export class PostRepository extends Repository<Post>{
     async getPostByIdForEditOrDelete(id:number, user:User){
         let result
         try{
-            if(user.role == userRoles.ADMIN)
+            if(user.role == UserRoles.ADMIN)
                 result = await this.findOne({where : {postId : id}});
             else
                 result = await this.findOne({where : {postId : id, authorId : user.id}});

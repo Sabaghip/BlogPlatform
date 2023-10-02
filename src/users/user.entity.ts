@@ -1,7 +1,7 @@
 import { IsIn } from "class-validator";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import * as bcrypt from "bcrypt";
-import { userRoles } from "./userRoles.enum";
+import { UserRoles } from "./userRoles.enum";
 import { Post } from "src/post/post.entity";
 import { Comment } from "src/comment/comment.entity";
 
@@ -21,8 +21,8 @@ export class User extends BaseEntity{
     salt : string;
     
     @Column()
-    @IsIn([userRoles.ADMIN, userRoles.USER])
-    role : userRoles;
+    @IsIn([UserRoles.ADMIN, UserRoles.USER])
+    role : UserRoles;
 
     @OneToMany(type => Post, post => post.author, { eager : true })
     posts : Post[];

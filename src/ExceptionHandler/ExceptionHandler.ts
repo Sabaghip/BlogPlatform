@@ -12,7 +12,7 @@ import { CreatePostDto } from "src/post/dto/createPost.dto";
 import { FilterOperator, paginate, PaginateQuery } from "nestjs-paginate";
 import { PostRepository } from "src/post/post.repository";
 import { Post } from "src/post/post.entity";
-import { userRoles } from "src/users/userRoles.enum";
+import { UserRoles } from "src/users/userRoles.enum";
 import { CommentService } from "src/comment/comment.service";
 import { CreateCommentDto } from 'src/comment/dto/createComment.dto';
 import { Comment } from "src/comment/comment.entity";
@@ -229,7 +229,7 @@ export class PostExceptionHandler {
     public static async getPostByIdForEditOrDeleteInRepositoryExceptionHandler(repository : PostRepository, user, id, logger : Logger){
         let result
         try{
-            if(user.role == userRoles.ADMIN)
+            if(user.role == UserRoles.ADMIN)
                 result = await repository.findOne({where : {postId : id}});
             else
                 result = await repository.findOne({where : {postId : id, authorId : user.id}});

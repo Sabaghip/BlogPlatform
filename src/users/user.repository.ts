@@ -2,7 +2,7 @@ import { Logger } from "@nestjs/common";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpDto } from "./dto/signUp.dto";
 import { User } from "./user.entity";
-import { userRoles } from "./userRoles.enum";
+import { UserRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
 import { SignInDto } from "./dto/signInDto.dto";
 import { UserExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
@@ -19,7 +19,7 @@ export class UserRepository extends Repository<User>{
         user.salt = await bcrypt.genSalt();
         user.username = username,
         user.password = await this.hashPassword(password, user.salt);
-        user.role = userRoles.USER;
+        user.role = UserRoles.USER;
         UserExceptionHandler.signUpInRepositoryExceptionHandler(user, signUpDto, this.logger);
         return;
     }
