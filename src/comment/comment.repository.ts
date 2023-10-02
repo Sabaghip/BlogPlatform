@@ -28,15 +28,15 @@ export class CommentRepository extends Repository<Comment>{
         if(user.role === UserRoles.ADMIN){
             const comment = await this.findOne({where : {id}});
             if(!comment){
-                this.logger.verbose(`Admin "${user.username} tried to delete comment with id = ${id}" but there is no comment with this id.`)
-                throw new NotFoundException(`there is no comment with id = ${id}`)
+                this.logger.verbose(`Admin "${user.username}" tried to delete comment with id = "${id}" but there is no comment with this id.`)
+                throw new NotFoundException(`there is no comment with id = "${id}"`)
             }
             return comment;
         }else{
             const comment = await this.findOne({where :{ id, authorId : user.id }});
             if(!comment){
-                this.logger.verbose(`User "${user.username} tried to delete comment with id = ${id}" but there is no comment with this id.`)
-                throw new NotFoundException(`you dont have any comment with id = ${id}`)
+                this.logger.verbose(`User "${user.username}" tried to delete comment with id = "${id}" but there is no comment with this id.`)
+                throw new NotFoundException(`you dont have any comment with id = "${id}"`)
             }
             return comment;
         }
@@ -45,8 +45,8 @@ export class CommentRepository extends Repository<Comment>{
     async getCommentByIdForEdit(id:number, user:User):Promise<Comment>{
         const comment = await this.findOne({where :{ id, authorId : user.id }});
         if(!comment){
-            this.logger.verbose(`User "${user.username} tried to edit comment with id = ${id}" but there is no comment with this id.`)
-            throw new NotFoundException(`you dont have any comment with id = ${id}`)
+            this.logger.verbose(`User "${user.username}" tried to edit comment with id = "${id}" but there is no comment with this id.`)
+            throw new NotFoundException(`you dont have any comment with id = "${id}"`)
         }
         return comment;
     }

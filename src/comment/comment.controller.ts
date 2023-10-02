@@ -14,7 +14,7 @@ export class CommentController {
         private commentService : CommentService,
     ){}
     
-    @Post("/:postid/createComment")
+    @Post("/:postid")
     createComment(
         @Body(ValidationPipe) createCommentDto : CreateCommentDto,
         @Param("postid", new ParseIntPipe) postid : number,
@@ -23,7 +23,7 @@ export class CommentController {
             return CommentExceptionHandler.createCommentExceptionHandler(this.commentService, user, createCommentDto, postid, this.logger);
         }
     
-    @Patch("/:id/editComment")
+    @Patch("/:id")
     editComment(
         @Param("id", new ParseIntPipe) id:number,
         @GetUser() user : User,
@@ -32,19 +32,11 @@ export class CommentController {
         return CommentExceptionHandler.editCommentExceptionHandler(this.commentService, user, id, createCommentDto, this.logger);
     }
 
-    @Delete("/:id/deleteComment")
+    @Delete("/:id")
     deleteComment(
         @Param("id", ParseIntPipe) id : number,
         @GetUser() user : User,
         ){
-            this.logger.verbose(`"${user.username}" trying to delete a comment.`)
-            let result;
-            try{
-                result = this.commentService.deleteComment(id, user);
-                return result;
-            }catch(err){
-                this.logger.error(`Failed to delete comment.`, err.stack)
-                throw new InternalServerErrorException()
-            }
+            return CommentExceptionHandler.deleteCommentExceptionHandler(this.commentService, user, id, this.logger);
     }
 }

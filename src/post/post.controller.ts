@@ -1,4 +1,4 @@
-import { Body, Controller, Query, Post, Req, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
 
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
@@ -18,7 +18,7 @@ export class PostController {
         private postService : PostService,
     ){}
 
-    @Post("/createPost")
+    @Post("")
     createPost(
         @GetUser() user,
         @Body(ValidationPipe)createPostDto : CreatePostDto,
@@ -27,7 +27,7 @@ export class PostController {
         return PostExceptionHandler.createPostExceptionHandler(this.postService, user, createPostDto, tags, this.logger)
     }
 
-    @Delete("/:id/deletePost")
+    @Delete("/:id")
     deletePost(
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
@@ -53,13 +53,13 @@ export class PostController {
         }
     }
 
-    @Patch("/:id/editpost")
+    @Patch("/:id")
     editPost(
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
         @Body(ValidationPipe) createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
         ){
-            PostExceptionHandler.editPostExceptionHandler(this.postService, user, id, createPostDto, tags, this.logger);
+            return PostExceptionHandler.editPostExceptionHandler(this.postService, user, id, createPostDto, tags, this.logger);
     }
 }
