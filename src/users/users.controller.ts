@@ -1,5 +1,4 @@
 import { Body, Controller, Post, ValidationPipe, UseGuards, Req, Logger } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { UserExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { SignInDto } from './dto/signInDto.dto';
 import { SignUpDto } from './dto/signUp.dto';
