@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Logger, Param, ParseIntPipe, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CommentExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
-import { GetUser } from 'src/post/dto/getUser.decorator';
+import { GetUser } from 'src/post/decorators/getUser.decorator';
 import { User } from 'src/users/user.entity';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/createComment.dto';

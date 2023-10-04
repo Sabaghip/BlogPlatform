@@ -4,7 +4,7 @@ import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { User } from 'src/users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
-import { GetUser } from './dto/getUser.decorator';
+import { GetUser } from './decorators/getUser.decorator';
 import { TagsPipe } from './Pipes/tags.pipe';
 import { Post as PostEntity} from './post.entity';
 import { PostService } from './post.service';
