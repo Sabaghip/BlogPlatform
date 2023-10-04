@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
 import { SignInDto } from './dto/signInDto.dto';
 import { SignUpDto } from './dto/signUp.dto';
+import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()

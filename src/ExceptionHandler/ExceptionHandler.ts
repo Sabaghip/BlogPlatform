@@ -19,15 +19,21 @@ import { Comment } from "src/comment/comment.entity";
 import { CommentRepository } from "src/comment/comment.repository";
 
 export class UserExceptionHandler {
-    public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpDto, logger : Logger){
+    public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpDto, logger : Logger) : Promise<void>{
         logger.verbose(`Someone trying to create a user. username : ${signUpDto.username}`)
         let result;
         try{
             result = userService.signUp(signUpDto);
             return result
         }catch(err){
-            logger.error(`Cannot create user. data : ${signUpDto.username}`, err.stack)
-            throw err
+            if(err instanceof BadRequestException){
+                logger.verbose(`Cannot create user. data : ${signUpDto.username}`, err.stack)
+                throw err
+            }
+            else{
+                logger.error(`Cannot create user. data : ${signUpDto.username}`, err.stack)
+                throw err
+            }
         }
     }
 
@@ -43,10 +49,10 @@ export class UserExceptionHandler {
         }
     }
 
-    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpDto, logger : Logger) : Promise<void>{
+    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpDto, logger : Logger) : Promise<User>{
         try{
             await user.save();
-            return ;
+            return user;
         }
         catch(err){
             if(err.code === "23505"){

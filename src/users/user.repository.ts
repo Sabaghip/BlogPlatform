@@ -20,8 +20,7 @@ export class UserRepository extends Repository<User>{
         user.username = username,
         user.password = await this.hashPassword(password, user.salt);
         user.role = UserRoles.USER;
-        UserExceptionHandler.signUpInRepositoryExceptionHandler(user, signUpDto, this.logger);
-        return;
+        await UserExceptionHandler.signUpInRepositoryExceptionHandler(user, signUpDto, this.logger);
     }
 
     async signIn(signInDto : SignInDto):Promise<User>{
