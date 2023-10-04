@@ -149,11 +149,11 @@ export class PostExceptionHandler {
         }
     }
 
-    public static editPostExceptionHandler(postService : PostService, user, id, createPostDto : CreatePostDto, tags : string, logger : Logger){
+    public static editPostExceptionHandler(postService : PostService, user, id, createPostDto : CreatePostDto, tagsString : string, logger : Logger){
         logger.verbose(`"${user.username}" trying to edit a post.`)
             let result;
             try{
-                result = postService.editPost(id, createPostDto, user, tags);
+                result = postService.editPost(id, createPostDto, user, tagsString);
                 return result;
             }catch(err){
                 logger.error("Failed to edit a post.", err.stack)

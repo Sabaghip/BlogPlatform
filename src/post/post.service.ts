@@ -38,7 +38,8 @@ export class PostService {
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
-        post.tags = tagsString;
+        post.tags = [];
+        this.postRepository.addTagsToPost(post, tagsString);
         return PostExceptionHandler.editPostsInServiceExceptionHandler(post, id, this.logger);
     }
 }

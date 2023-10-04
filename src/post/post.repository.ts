@@ -18,18 +18,14 @@ export class PostRepository extends Repository<Post>{
         super(Post, dataSource.createEntityManager())
     }
 
-    async createPost(createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
+    async createPost(createPostDto:CreatePostDto, user:User, tagsString:string):Promise<Post>{
         const {title, content} = createPostDto;
         const post = new Post();
         post.title = title;
         post.content = content;
         post.author = user;
         post.tags = [];
-        tags = eval(tags)
-        for(let i = 0; i < tags.length; i++){
-            let tag = await this.tagRepository.createTag(tags[i])
-            post.tags.push(tag)
-        }
+        this.addTagsToPost(post, tagsString);
         return PostExceptionHandler.createPostInRepositoryExceptionHandler(post, this.logger);
     }
 
@@ -52,5 +48,13 @@ export class PostRepository extends Repository<Post>{
             throw new NotFoundException(`there is no post with id = ${id}`)
         }
         return result;
+    }
+
+    async addTagsToPost(post : Post, tagsString : string){
+        let tagsList = eval(tagsString);
+        for(let i = 0; i < tagsList.length; i++){
+            let tag = await this.tagRepository.createTag(tagsList[i])
+            post.tags.push(tag)
+        }
     }
 }
