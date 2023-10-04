@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
-import { SignInDto } from './dto/signInDto.dto';
-import { SignUpDto } from './dto/signUp.dto';
+import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
 import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -16,10 +15,10 @@ export class UsersService {
         private jwtService : JwtService,
     ){}
 
-    async signUp(signUpDto : SignUpDto) : Promise<void>{
+    async signUp(signUpDto : SignUpOrSignInDto) : Promise<void>{
         await this.userRepository.signUp(signUpDto);
     }
-    async signIn(signInDto : SignInDto): Promise<{accessToken : string}>{
+    async signIn(signInDto : SignUpOrSignInDto): Promise<{accessToken : string}>{
         const user = await this.userRepository.signIn(signInDto);
         return await UserExceptionHandler.signInInServiceExceptionHandler(user, this.logger, this.jwtService, signInDto);
     }

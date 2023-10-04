@@ -1,6 +1,5 @@
 import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { SignInDto } from "src/users/dto/signInDto.dto";
-import { SignUpDto } from "src/users/dto/signUp.dto";
+import { SignUpOrSignInDto } from "src/users/dto/signUpOrSignIn.dto";
 import { User } from "src/users/user.entity";
 import { UserRepository } from "src/users/user.repository";
 import { UsersService } from "src/users/users.service";
@@ -19,7 +18,7 @@ import { Comment } from "src/comment/comment.entity";
 import { CommentRepository } from "src/comment/comment.repository";
 
 export class UserExceptionHandler {
-    public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpDto, logger : Logger) : Promise<void>{
+    public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<void>{
         logger.verbose(`Someone trying to create a user. username : ${signUpDto.username}`)
         let result;
         try{
@@ -37,7 +36,7 @@ export class UserExceptionHandler {
         }
     }
 
-    public static signInExceptionHandler(userService : UsersService, signInDto : SignInDto, logger : Logger){
+    public static signInExceptionHandler(userService : UsersService, signInDto : SignUpOrSignInDto, logger : Logger){
         logger.verbose(`Someone trying to sign in as a user. data : ${signInDto.username}`)
         let result;
         try{
@@ -49,7 +48,7 @@ export class UserExceptionHandler {
         }
     }
 
-    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpDto, logger : Logger) : Promise<User>{
+    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<User>{
         try{
             await user.save();
             return user;
@@ -65,7 +64,7 @@ export class UserExceptionHandler {
         }
     }
 
-    public static async signInInRepositoryExceptionHandler(userRepository : UserRepository,signInDto : SignInDto, logger : Logger){
+    public static async signInInRepositoryExceptionHandler(userRepository : UserRepository,signInDto : SignUpOrSignInDto, logger : Logger){
         let user;
         try{
             user = await userRepository.findOne({where : {username:signInDto.username}})
@@ -86,7 +85,7 @@ export class UserExceptionHandler {
             logger.error(`Failed to hash password.`, err.stack)
         }
     }
-    public static async signInInServiceExceptionHandler(user : User, logger : Logger, jwtService : JwtService, signInDto : SignInDto){
+    public static async signInInServiceExceptionHandler(user : User, logger : Logger, jwtService : JwtService, signInDto : SignUpOrSignInDto){
         if(!user){
             logger.verbose(`Someone tried to sign in as "${signInDto.username}" with invalid creditionals.`)
             throw new UnauthorizedException("Invalid creditionals.")
