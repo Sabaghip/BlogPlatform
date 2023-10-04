@@ -16,7 +16,7 @@ tags:
   - name: Comment
     description: Everything about comments
 paths:
-  /post/{postId}/editpost:
+  /post/{postId}:
     patch:
       tags:
         - Post
@@ -53,35 +53,7 @@ paths:
           description: Unauthorized
       security:
         - userAuth: []
-  /post/createpost:
-    post:
-      tags:
-        - Post
-      summary: Create new Post
-      operationId: createpost
-      requestBody:
-        description: Create new Post
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/CreatePost'
-        required: true
-      responses:
-        '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Post'          
-        '400':
-          description: Body parameters are invalid.
-        '404':
-          description: Post not found
-        '401':
-          description: Unauthorized
-      security:
-        - userAuth: []
-  /post/{postId}/deletepost:
+
     delete:
       tags:
         - Post
@@ -103,6 +75,34 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Post'
+        '404':
+          description: Post not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /post:
+    post:
+      tags:
+        - Post
+      summary: Create new Post
+      operationId: createpost
+      requestBody:
+        description: Create new Post
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CreatePost'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'          
+        '400':
+          description: Body parameters are invalid.
         '404':
           description: Post not found
         '401':
@@ -205,7 +205,7 @@ paths:
         '401':
           description: Unauthorized
           
-  /comment/{commentId}/editcomment:
+  /comment/{commentId}:
     patch:
       tags:
         - Comment
@@ -242,7 +242,31 @@ paths:
           description: Unauthorized
       security:
         - userAuth: []
-  /comment/{postId}/createComment:
+
+    delete:
+      tags:
+        - Comment
+      summary: Delete an existing Comment
+      description: Delete an existing Comment by Id
+      operationId: deleteComment
+      parameters:
+        - name: commentId
+          in: path
+          description: ID of Comment to delete
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Comment not found
+        '401':
+          description: Unauthorized
+      security:
+        - userAuth: []
+  /comment/{postId}:
     post:
       tags:
         - Comment
@@ -278,33 +302,7 @@ paths:
           description: Unauthorized
       security:
         - userAuth: []
-  /comment/{commentId}/deleteComment:
-    delete:
-      tags:
-        - Comment
-      summary: Delete an existing Comment
-      description: Delete an existing Comment by Id
-      operationId: deleteComment
-      parameters:
-        - name: commentId
-          in: path
-          description: ID of Comment to delete
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: Successful operation
-        '404':
-          description: Comment not found
-        '401':
-          description: Unauthorized
-      security:
-        - userAuth: []
-
-          
-
+        
 components:
   schemas:
     Tag:
@@ -359,16 +357,7 @@ components:
           type: array
           items: 
           $ref: '#/components/schemas/Tag'
-          example: [
-        {
-            "id": 2,
-            "content": "t3"
-        },
-        {
-            "id": 3,
-            "content": "t4"
-        }
-    ]
+          example: [{"id": 2,"content": "t3"},{"id": 3,"content": "t4"}]
         authorId:
           type: integer
           example: 1
