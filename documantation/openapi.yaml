@@ -302,7 +302,7 @@ paths:
           description: Unauthorized
       security:
         - userAuth: []
-        
+
 components:
   schemas:
     Tag:

@@ -1,5 +1,4 @@
 import { Body, Controller, Post, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
-
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
@@ -42,15 +41,7 @@ export class PostController {
 
     @Post("/getPostsPaginated")
     getPostsPaginated(@GetUser() user : User, @Paginate() query: PaginateQuery){
-        this.logger.verbose(`"${user.username}" trying to get paginated posts.`)
-        let result;
-        try{
-            result = this.postService.getPostsPaginated(user, query);
-            return result;
-        }catch(err){
-            this.logger.error("Failed to get paginated posts.", err.stack)
-            throw new InternalServerErrorException()
-        }
+        PostExceptionHandler.getPaginatedPostsExceptionHandler(this.postService, user, query, this.logger);
     }
 
     @Patch("/:id")
@@ -58,8 +49,8 @@ export class PostController {
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
         @Body(ValidationPipe) createPostDto : CreatePostDto,
-        @Body("tags", TagsPipe) tags : string,
+        @Body("tags", TagsPipe) tagsString : string,
         ){
-            return PostExceptionHandler.editPostExceptionHandler(this.postService, user, id, createPostDto, tags, this.logger);
+            return PostExceptionHandler.editPostExceptionHandler(this.postService, user, id, createPostDto, tagsString, this.logger);
     }
 }

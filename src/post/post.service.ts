@@ -33,12 +33,12 @@ export class PostService {
         return PostExceptionHandler.getPostsInServiceExceptionHandler(this.postRepository, user, this.logger);
     }
 
-    async editPost(id:number, createPostDto:CreatePostDto, user:User, tags:string):Promise<Post>{
+    async editPost(id:number, createPostDto:CreatePostDto, user:User, tagsString:string):Promise<Post>{
         const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
-        post.tags = tags;
+        post.tags = tagsString;
         return PostExceptionHandler.editPostsInServiceExceptionHandler(post, id, this.logger);
     }
 }
