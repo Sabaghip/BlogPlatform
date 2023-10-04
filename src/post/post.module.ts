@@ -9,6 +9,7 @@ import { TagRepository } from './tag.repository';
 @Module({
   imports : [TypeOrmModule.forFeature([PostRepository, TagRepository]), UsersModule],
   controllers: [PostController],
-  providers: [PostService, PostRepository, TagRepository]
+  providers: [PostService, PostRepository, TagRepository],
+  exports: [TagRepository, PostRepository]
 })
 export class PostModule {}
