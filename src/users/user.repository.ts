@@ -4,7 +4,7 @@ import { SignUpOrSignInDto } from "./dto/signUpOrSignIn.dto";
 import { User } from "./user.entity";
 import { UserRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
-import { UserExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
+import { UserExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{

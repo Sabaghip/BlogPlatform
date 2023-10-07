@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {  Paginated, PaginateQuery } from 'nestjs-paginate';
-import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
-import { User } from 'src/users/user.entity';
+import { PostExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
+import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
 import { PostRepository } from './post.repository';

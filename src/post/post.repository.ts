@@ -1,8 +1,8 @@
 import { InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { PostExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
-import { User } from "src/users/user.entity";
-import { UserRoles } from "src/users/userRoles.enum";
+import { PostExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
+import { User } from "../users/user.entity";
+import { UserRoles } from "../users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";

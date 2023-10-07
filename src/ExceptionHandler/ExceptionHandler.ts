@@ -1,21 +1,21 @@
 import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { SignUpOrSignInDto } from "src/users/dto/signUpOrSignIn.dto";
-import { User } from "src/users/user.entity";
-import { UserRepository } from "src/users/user.repository";
-import { UsersService } from "src/users/users.service";
+import { SignUpOrSignInDto } from "../users/dto/signUpOrSignIn.dto";
+import { User } from "../users/user.entity";
+import { UserRepository } from "../users/user.repository";
+import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
-import { JwtPayload } from "src/users/Jwt-Payload.Interface";
+import { JwtPayload } from "../users/Jwt-Payload.Interface";
 import { JwtService } from "@nestjs/jwt";
-import { PostService } from "src/post/post.service";
-import { CreatePostDto } from "src/post/dto/createPost.dto";
+import { PostService } from "../post/post.service";
+import { CreatePostDto } from "../post/dto/createPost.dto";
 import { FilterOperator, paginate, PaginateQuery } from "nestjs-paginate";
-import { PostRepository } from "src/post/post.repository";
-import { Post } from "src/post/post.entity";
-import { UserRoles } from "src/users/userRoles.enum";
-import { CommentService } from "src/comment/comment.service";
-import { CreateCommentDto } from 'src/comment/dto/createComment.dto';
-import { Comment } from "src/comment/comment.entity";
-import { CommentRepository } from "src/comment/comment.repository";
+import { PostRepository } from "../post/post.repository";
+import { Post } from "../post/post.entity";
+import { UserRoles } from "../users/userRoles.enum";
+import { CommentService } from "../comment/comment.service";
+import { CreateCommentDto } from '../comment/dto/createComment.dto';
+import { Comment } from "../comment/comment.entity";
+import { CommentRepository } from "../comment/comment.repository";
 
 export class UserExceptionHandler {
     public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<void>{
@@ -106,6 +106,10 @@ export class PostExceptionHandler {
         logger.verbose(`"${user.username}" trying to create a post.`)
         let result;
         try{
+            return {
+                data: '',
+                status: 201
+            }
             result = postService.createPost(createPostDto, user, tags);
             return result;
         }catch(err){

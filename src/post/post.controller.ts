@@ -1,8 +1,8 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, InternalServerErrorException, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
-import { PostExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
-import { User } from 'src/users/user.entity';
+import { PostExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
+import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
 import { GetUser } from './decorators/getUser.decorator';
 import { TagsPipe } from './Pipes/tags.pipe';
@@ -21,7 +21,7 @@ export class PostController {
     createPost(
         @GetUser() user,
         @Body(ValidationPipe)createPostDto : CreatePostDto,
-        @Body("tags", TagsPipe) tags : string,
+        @Body("tags", TagsPipe) tags : string,z
     ) : Promise<PostEntity>{
         return PostExceptionHandler.createPostExceptionHandler(this.postService, user, createPostDto, tags, this.logger)
     }

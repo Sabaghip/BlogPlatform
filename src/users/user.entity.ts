@@ -2,8 +2,8 @@ import { IsIn } from "class-validator";
 import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { UserRoles } from "./userRoles.enum";
-import { Post } from "src/post/post.entity";
-import { Comment } from "src/comment/comment.entity";
+import { Post } from "../post/post.entity";
+import { Comment } from "../comment/comment.entity";
 
 @Entity()
 @Unique(["username"])

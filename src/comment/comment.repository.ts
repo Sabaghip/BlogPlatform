@@ -1,8 +1,8 @@
 import { Logger, NotFoundException } from "@nestjs/common";
-import { CommentExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
-import { Post } from "src/post/post.entity";
-import { User } from "src/users/user.entity";
-import { UserRoles } from "src/users/userRoles.enum";
+import { CommentExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
+import { Post } from "../post/post.entity";
+import { User } from "../users/user.entity";
+import { UserRoles } from "../users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { Comment } from "./comment.entity";
 import { CreateCommentDto } from "./dto/createComment.dto";

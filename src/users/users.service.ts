@@ -1,9 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
+import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
-import { User } from './user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()

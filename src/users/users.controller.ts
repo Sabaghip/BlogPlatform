@@ -1,7 +1,6 @@
 import { Body, Controller, Post, ValidationPipe, UseGuards, Req, Logger } from '@nestjs/common';
-import { UserExceptionHandler } from 'src/ExceptionHandler/ExceptionHandler';
+import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
-import { User } from './user.entity';
 import { UsersService } from './users.service';
 
 @Controller('users')
