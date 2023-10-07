@@ -1,6 +1,6 @@
 import { BaseEntity, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "src/users/user.entity";
-import {Comment} from "src/comment/comment.entity"
+import { User } from "../users/user.entity";
+import {Comment} from "../comment/comment.entity"
 import { Tag } from "./tag.entity";
 
 @Entity()

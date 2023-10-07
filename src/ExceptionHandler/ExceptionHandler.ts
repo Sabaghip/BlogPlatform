@@ -1,21 +1,22 @@
 import { BadRequestException, InternalServerErrorException, Logger, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { SignUpOrSignInDto } from "src/users/dto/signUpOrSignIn.dto";
-import { User } from "src/users/user.entity";
-import { UserRepository } from "src/users/user.repository";
-import { UsersService } from "src/users/users.service";
+import { SignUpOrSignInDto } from "../users/dto/signUpOrSignIn.dto";
+import { User } from "../users/user.entity";
+import { UserRepository } from "../users/user.repository";
+import { UsersService } from "../users/users.service";
 import * as bcrypt from "bcrypt";
-import { JwtPayload } from "src/users/Jwt-Payload.Interface";
+import { JwtPayload } from "../users/Jwt-Payload.Interface";
 import { JwtService } from "@nestjs/jwt";
-import { PostService } from "src/post/post.service";
-import { CreatePostDto } from "src/post/dto/createPost.dto";
+import { PostService } from "../post/post.service";
+import { CreatePostDto } from "../post/dto/createPost.dto";
 import { FilterOperator, paginate, PaginateQuery } from "nestjs-paginate";
-import { PostRepository } from "src/post/post.repository";
-import { Post } from "src/post/post.entity";
-import { UserRoles } from "src/users/userRoles.enum";
-import { CommentService } from "src/comment/comment.service";
-import { CreateCommentDto } from 'src/comment/dto/createComment.dto';
-import { Comment } from "src/comment/comment.entity";
-import { CommentRepository } from "src/comment/comment.repository";
+import { PostRepository } from "../post/post.repository";
+import { Post } from "../post/post.entity";
+import { UserRoles } from "../users/userRoles.enum";
+import { CommentService } from "../comment/comment.service";
+import { CreateCommentDto } from '../comment/dto/createComment.dto';
+import { Comment } from "../comment/comment.entity";
+import { CommentRepository } from "../comment/comment.repository";
+import { Repository } from "typeorm";
 
 export class UserExceptionHandler {
     public static signUpExceptionHandler(userService : UsersService, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<void>{
@@ -48,9 +49,9 @@ export class UserExceptionHandler {
         }
     }
 
-    public static async signUpInRepositoryExceptionHandler(user : User, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<User>{
+    public static async signUpInRepositoryExceptionHandler(user : User,userRepository : Repository<User>, signUpDto : SignUpOrSignInDto, logger : Logger) : Promise<User>{
         try{
-            await user.save();
+            await userRepository.save(user);
             return user;
         }
         catch(err){
@@ -67,7 +68,7 @@ export class UserExceptionHandler {
     public static async signInInRepositoryExceptionHandler(userRepository : UserRepository,signInDto : SignUpOrSignInDto, logger : Logger){
         let user;
         try{
-            user = await userRepository.findOne({where : {username:signInDto.username}})
+            user = await userRepository.findOne(signInDto.username)
         }catch(err){
             logger.error(`Failed sign in as user. username : ${signInDto.username}`, err.stack)
             throw err;
@@ -161,7 +162,7 @@ export class PostExceptionHandler {
         }
     }
 
-    public static async getPaginatedPostInServiceExceptionHandler(postRepository : PostRepository, user, query, logger : Logger){
+    public static async getPaginatedPostInServiceExceptionHandler(postRepository : Repository<Post>, user, query, logger : Logger){
         let result;
         try{
             result =  await paginate(query, postRepository, {
@@ -185,7 +186,7 @@ export class PostExceptionHandler {
         }
     }
 
-    public static async getPostsInServiceExceptionHandler(postRepository : PostRepository, user, logger : Logger){
+    public static async getPostsInServiceExceptionHandler(postRepository : Repository<Post>, user, logger : Logger){
         let result;
         try{
             result = await postRepository.find({relations : ["tags"]});
@@ -208,16 +209,16 @@ export class PostExceptionHandler {
         }
     }
 
-    public static async createPostInRepositoryExceptionHandler(post : Post, logger : Logger){
+    public static async createPostInRepositoryExceptionHandler(post : Post, postRepository : Repository<Post>, logger : Logger){
         try{
-            await post.save();
+            await postRepository.save(post);
             delete post.author;
             return post
         }catch(err){
             logger.error("Failed to ceate a post in repository.", err.stack)
         }
     }
-    public static async getPostByIdInRepositoryExceptionHandler(repository : PostRepository, user, id, logger : Logger){
+    public static async getPostByIdInRepositoryExceptionHandler(repository : Repository<Post>, user, id, logger : Logger){
         let result
         try{
             result = await repository.findOne({where : {postId : id}});
@@ -231,7 +232,7 @@ export class PostExceptionHandler {
         }
         return result;
     }
-    public static async getPostByIdForEditOrDeleteInRepositoryExceptionHandler(repository : PostRepository, user, id, logger : Logger){
+    public static async getPostByIdForEditOrDeleteInRepositoryExceptionHandler(repository : Repository<Post>, user, id, logger : Logger){
         let result
         try{
             if(user.role == UserRoles.ADMIN)
@@ -309,7 +310,7 @@ export class CommentExceptionHandler {
         }
     }
 
-    public static async deleteCommentInRepositoryExceptionHandler(repository : CommentRepository, id, logger : Logger){
+    public static async deleteCommentInRepositoryExceptionHandler(repository : Repository<Comment>, id, logger : Logger){
         try{
             await repository.delete({id})
         }catch(err){

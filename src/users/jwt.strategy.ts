@@ -9,7 +9,6 @@ import { UserRepository } from "./user.repository";
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy){
     constructor(
-        @InjectRepository(UserRepository)
         private userRepository : UserRepository
     ){
         super({
@@ -20,7 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy){
 
     async validate(payload : JwtPayload) : Promise<User>{
         const {username, role} = payload;
-        const user = await this.userRepository.findOne({where : {username : username}})
+        const user = await this.userRepository.findOne(username)
 
         if(!user){
             throw new UnauthorizedException();

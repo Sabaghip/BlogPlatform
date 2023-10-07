@@ -4,13 +4,22 @@ import { SignUpOrSignInDto } from "./dto/signUpOrSignIn.dto";
 import { User } from "./user.entity";
 import { UserRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
-import { UserExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
+import { UserExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
+import { datasourceConfig } from "../config/DataSourceConfig";
 
 @EntityRepository(User)
-export class UserRepository extends Repository<User>{
-    private logger = new Logger("UserRepository")
-    constructor(private dataSource: DataSource) {
-        super(User, dataSource.createEntityManager());
+export class UserRepository{
+    private logger = new Logger("UserRepository");
+    private userRepository : Repository<User>;
+    private AppDataSource = new DataSource(datasourceConfig);
+    constructor(){
+        this.AppDataSource.initialize();
+        this.userRepository = new Repository<User>(User, this.AppDataSource.manager);
+    }
+
+    async findOne(username : string) : Promise<User>{
+        const user = await this.userRepository.find({where : {username:username}});
+        return user[0];
     }
     async signUp(signUpDto:SignUpOrSignInDto) : Promise<void>{
         const {username, password} = signUpDto;
@@ -19,7 +28,7 @@ export class UserRepository extends Repository<User>{
         user.username = username,
         user.password = await this.hashPassword(password, user.salt);
         user.role = UserRoles.USER;
-        await UserExceptionHandler.signUpInRepositoryExceptionHandler(user, signUpDto, this.logger);
+        await UserExceptionHandler.signUpInRepositoryExceptionHandler(user, this.userRepository, signUpDto, this.logger);
     }
 
     async signIn(signInDto : SignUpOrSignInDto):Promise<User>{

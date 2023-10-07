@@ -1,18 +1,22 @@
 import { Logger, NotFoundException } from "@nestjs/common";
-import { CommentExceptionHandler } from "src/ExceptionHandler/ExceptionHandler";
-import { Post } from "src/post/post.entity";
-import { User } from "src/users/user.entity";
-import { UserRoles } from "src/users/userRoles.enum";
+import { CommentExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
+import { Post } from "../post/post.entity";
+import { User } from "../users/user.entity";
+import { UserRoles } from "../users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { Comment } from "./comment.entity";
 import { CreateCommentDto } from "./dto/createComment.dto";
+import { datasourceConfig } from "src/config/DataSourceConfig";
 
 
 @EntityRepository(Comment)
-export class CommentRepository extends Repository<Comment>{
+export class CommentRepository{
     private logger = new Logger("CommentRepository")
-    constructor(private dataSource: DataSource) {
-        super(Comment, dataSource.createEntityManager());
+    private commentRepository : Repository<Comment>;
+    private AppDataSource = new DataSource(datasourceConfig);
+    constructor(){
+        this.AppDataSource.initialize();
+        this.commentRepository = new Repository<Comment>(Comment, this.AppDataSource.manager);
     }
 
     async createComment(createCommentDto : CreateCommentDto, post : Post, user : User): Promise<Comment>{
@@ -26,14 +30,14 @@ export class CommentRepository extends Repository<Comment>{
 
     async getCommentByIdForDelete(id:number, user:User):Promise<Comment>{
         if(user.role === UserRoles.ADMIN){
-            const comment = await this.findOne({where : {id}});
+            const comment = await this.commentRepository.findOne({where : {id}});
             if(!comment){
                 this.logger.verbose(`Admin "${user.username}" tried to delete comment with id = "${id}" but there is no comment with this id.`)
                 throw new NotFoundException(`there is no comment with id = "${id}"`)
             }
             return comment;
         }else{
-            const comment = await this.findOne({where :{ id, authorId : user.id }});
+            const comment = await this.commentRepository.findOne({where :{ id, authorId : user.id }});
             if(!comment){
                 this.logger.verbose(`User "${user.username}" tried to delete comment with id = "${id}" but there is no comment with this id.`)
                 throw new NotFoundException(`you dont have any comment with id = "${id}"`)
@@ -43,7 +47,7 @@ export class CommentRepository extends Repository<Comment>{
     }
 
     async getCommentByIdForEdit(id:number, user:User):Promise<Comment>{
-        const comment = await this.findOne({where :{ id, authorId : user.id }});
+        const comment = await this.commentRepository.findOne({where :{ id, authorId : user.id }});
         if(!comment){
             this.logger.verbose(`User "${user.username}" tried to edit comment with id = "${id}" but there is no comment with this id.`)
             throw new NotFoundException(`you dont have any comment with id = "${id}"`)
@@ -60,6 +64,6 @@ export class CommentRepository extends Repository<Comment>{
 
     async deleteComment(id, user : User){
         const comment = await this.getCommentByIdForDelete(id, user);
-        return CommentExceptionHandler.deleteCommentInRepositoryExceptionHandler(this, id, this.logger);
+        return CommentExceptionHandler.deleteCommentInRepositoryExceptionHandler(this.commentRepository, id, this.logger);
     }
 }
