@@ -21,7 +21,7 @@ export class PostController {
     createPost(
         @GetUser() user,
         @Body(ValidationPipe)createPostDto : CreatePostDto,
-        @Body("tags", TagsPipe) tags : string,
+        @Body("tags", TagsPipe) tags : string,z
     ) : Promise<PostEntity>{
         return PostExceptionHandler.createPostExceptionHandler(this.postService, user, createPostDto, tags, this.logger)
     }

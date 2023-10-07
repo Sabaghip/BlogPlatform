@@ -1,6 +1,3 @@
-import { User } from './user.entity';
-import { UserRoles } from './userRoles.enum';
-import * as bcrypt from "bcrypt";
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';

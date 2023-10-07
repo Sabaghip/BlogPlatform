@@ -1,9 +1,6 @@
 import { UsersService } from './users.service';
 import { UserRepository } from './user.repository';
 import { Test } from '@nestjs/testing';
-import { JwtStrategy } from './jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
-import { CanActivate } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 describe('UsersService', () => {

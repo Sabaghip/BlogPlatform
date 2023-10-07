@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from 'src/users/user.repository';
 import { UsersModule } from '../users/users.module';
 import { PostController } from './post.controller';
 import { PostRepository } from './post.repository';
@@ -10,7 +9,7 @@ import { TagRepository } from './tag.repository';
 @Module({
   imports : [TypeOrmModule.forFeature([PostRepository, TagRepository]), UsersModule],
   controllers: [PostController],
-  providers: [PostService, PostRepository, TagRepository, UserRepository],
+  providers: [PostService, PostRepository, TagRepository],
   exports: [TagRepository, PostRepository]
 })
 export class PostModule {}

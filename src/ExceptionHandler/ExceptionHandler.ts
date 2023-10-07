@@ -9,13 +9,11 @@ import { JwtService } from "@nestjs/jwt";
 import { PostService } from "../post/post.service";
 import { CreatePostDto } from "../post/dto/createPost.dto";
 import { FilterOperator, paginate, PaginateQuery } from "nestjs-paginate";
-import { PostRepository } from "../post/post.repository";
 import { Post } from "../post/post.entity";
 import { UserRoles } from "../users/userRoles.enum";
 import { CommentService } from "../comment/comment.service";
 import { CreateCommentDto } from '../comment/dto/createComment.dto';
 import { Comment } from "../comment/comment.entity";
-import { CommentRepository } from "../comment/comment.repository";
 import { Repository } from "typeorm";
 
 export class UserExceptionHandler {
@@ -107,6 +105,10 @@ export class PostExceptionHandler {
         logger.verbose(`"${user.username}" trying to create a post.`)
         let result;
         try{
+            return {
+                data: '',
+                status: 201
+            }
             result = postService.createPost(createPostDto, user, tags);
             return result;
         }catch(err){
