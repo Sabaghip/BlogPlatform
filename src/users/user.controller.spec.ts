@@ -29,7 +29,7 @@ describe('UsersController', () => {
   describe("signup", ()=>{
     it("signup successfull", async()=>{
         UserExceptionHandler.signUpExceptionHandler = jest.fn().mockReturnValue(null);
-        expect(userController.signUp({username : "username", password : "password"})).not.toThrow();
+        expect(userController.signUp({username : "username", password : "password"})).toBeNull();
     })
     it("signup not successfull", async()=>{
         UserExceptionHandler.signUpExceptionHandler = jest.fn().mockReturnValue(UnauthorizedException);
@@ -40,11 +40,11 @@ describe('UsersController', () => {
   describe("signin", ()=>{
     it("signin successfull", async()=>{
         UserExceptionHandler.signInExceptionHandler = jest.fn().mockReturnValue(null);
-        expect(userController.signUp({username : "username", password : "password"})).not.toThrow();
+        expect(userController.signIn({username : "username", password : "password"})).toBeNull();
     })
     it("signin not successfull", async()=>{
         UserExceptionHandler.signInExceptionHandler = jest.fn().mockReturnValue(UnauthorizedException);
-        expect(userController.signUp({username : "username", password : "wrongPassword"})).toThrow();
+        expect(userController.signIn({username : "username", password : "wrongPassword"})).toThrow();
     })
   })
 });

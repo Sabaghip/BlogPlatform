@@ -1,5 +1,5 @@
 import { InternalServerErrorException, Logger } from "@nestjs/common";
-import { datasourceConfig } from "src/config/DataSourceConfig";
+import { datasourceConfig } from "../config/DataSourceConfig";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { Tag } from "./tag.entity";
 

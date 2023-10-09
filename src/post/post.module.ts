@@ -7,7 +7,7 @@ import { PostService } from './post.service';
 import { TagRepository } from './tag.repository';
 
 @Module({
-  imports : [TypeOrmModule.forFeature([PostRepository, TagRepository]), UsersModule],
+  imports : [TypeOrmModule.forFeature([PostRepository, TagRepository]), UsersModule,],
   controllers: [PostController],
   providers: [PostService, PostRepository, TagRepository],
   exports: [TagRepository, PostRepository]
