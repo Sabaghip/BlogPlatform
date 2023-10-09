@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './user.repository';
-import { DataSource } from 'typeorm';
 import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
-import { User } from './user.entity';
 import { UnauthorizedException } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 
 const mockCreditionDto = {username : "TestUsername", password : "TestPassword"};
 
@@ -14,7 +13,8 @@ describe('UsersRepository', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserRepository,
-        UserExceptionHandler
+        UserExceptionHandler,
+        PassportModule
       ],
     }).compile();
 

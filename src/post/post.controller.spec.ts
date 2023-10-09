@@ -1,12 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PostExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { BadRequestException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { PostRepository } from './post.repository';
 import { Post } from './post.entity';
 import { User } from '../users/user.entity';
+import { PassportModule } from '@nestjs/passport';
 
 describe('PostsController', () => {
   let postController : PostController;
@@ -21,6 +22,7 @@ describe('PostsController', () => {
         PostService,
         PostRepository,
         PostExceptionHandler,
+        PassportModule
       ],
     }).compile();
     postController = module.get<PostController>(PostController);

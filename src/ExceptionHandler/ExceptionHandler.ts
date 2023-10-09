@@ -101,14 +101,10 @@ export class UserExceptionHandler {
 }
 
 export class PostExceptionHandler {
-    public static createPostExceptionHandler(postService : PostService, user, createPostDto : CreatePostDto,tags : string, logger : Logger){
+    static createPostExceptionHandler(postService : PostService, user, createPostDto : CreatePostDto,tags : string, logger : Logger){
         logger.verbose(`"${user.username}" trying to create a post.`)
         let result;
         try{
-            return {
-                data: '',
-                status: 201
-            }
             result = postService.createPost(createPostDto, user, tags);
             return result;
         }catch(err){

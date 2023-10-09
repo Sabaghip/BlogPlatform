@@ -5,6 +5,7 @@ import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { JwtService } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 describe('UsersController', () => {
   let userController : UsersController;
@@ -19,6 +20,7 @@ describe('UsersController', () => {
         UsersService,
         UserRepository,
         UserExceptionHandler,
+        PassportModule
       ],
     }).compile();
     userController = module.get<UsersController>(UsersController);
