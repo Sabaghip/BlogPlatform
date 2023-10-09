@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './user.repository';
-import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
-import { UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { User } from './user.entity';
 
 const mockCreditionDto = {username : "TestUsername", password : "TestPassword"};
 
@@ -13,7 +13,6 @@ describe('UsersRepository', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UserRepository,
-        UserExceptionHandler,
         PassportModule
       ],
     }).compile();
@@ -23,12 +22,12 @@ describe('UsersRepository', () => {
 
   describe("signIn", ()=>{
     it("sign in successfuly", ()=>{
-      UserExceptionHandler.signInInRepositoryExceptionHandler = jest.fn().mockReturnValue(mockCreditionDto);
+      usersRepository.findOne = jest.fn().mockReturnValue(new User)
       expect(usersRepository.signIn(mockCreditionDto)).resolves.not.toThrow();
     })
 
     it("sign in not successfuly", ()=>{
-      UserExceptionHandler.signInInRepositoryExceptionHandler = jest.fn().mockReturnValue(UnauthorizedException);
+      usersRepository.findOne = jest.fn().mockReturnValue(BadRequestException)
       expect(usersRepository.signIn(mockCreditionDto)).resolves.toThrow();
     })
   })

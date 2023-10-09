@@ -1,6 +1,6 @@
-import { Body, Controller, Post, ValidationPipe, UseGuards, Req, Logger } from '@nestjs/common';
-import { UserExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
+import { Body, Controller, Post, ValidationPipe, UseGuards, Req, Logger, UseFilters } from '@nestjs/common';
 import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
+import { SignInOrSignUpPipe } from './pipes/signInOrSignUpPipe';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -11,12 +11,14 @@ export class UsersController {
     ){}
 
     @Post("/signUp")
-    signUp(@Body(ValidationPipe) signUpDto:SignUpOrSignInDto){
-       return UserExceptionHandler.signUpExceptionHandler(this.userService, signUpDto, this.logger);
+    signUp(@Body(SignInOrSignUpPipe) signUpDto:SignUpOrSignInDto){
+        this.logger.verbose(`Someone trying to create a user. username : ${signUpDto.username}`)
+        return this.userService.signUp(signUpDto);
     }
 
     @Post("/signIn")
-    signIn(@Body(ValidationPipe) signInDto : SignUpOrSignInDto):Promise<{accessToken : string}>{
-        return UserExceptionHandler.signInExceptionHandler(this.userService, signInDto, this.logger)
+    signIn(@Body(SignInOrSignUpPipe) signInDto : SignUpOrSignInDto):Promise<{accessToken : string}>{
+        this.logger.verbose(`Someone trying to sign in as a user. data : ${signInDto.username}`)
+        return this.userService.signIn(signInDto);
     }
 }

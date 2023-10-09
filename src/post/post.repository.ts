@@ -1,6 +1,4 @@
 import { InternalServerErrorException, Logger, NotFoundException} from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { PostExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
 import { User } from "../users/user.entity";
 import { UserRoles } from "../users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
@@ -8,8 +6,7 @@ import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";
 import { TagRepository } from "./tag.repository";
 import { datasourceConfig } from "../config/DataSourceConfig";
-import { Tag } from "./tag.entity";
-import { PaginateQuery } from "nestjs-paginate";
+import { FilterOperator, paginate, PaginateQuery } from "nestjs-paginate";
 
 
 @EntityRepository(Post)
@@ -24,19 +21,30 @@ export class PostRepository{
         this.tagRepository = new TagRepository();
     }
 
-    async createPost(createPostDto:CreatePostDto, user:User, tagsString:string):Promise<Post>{
-        const {title, content} = createPostDto;
-        const post = new Post();
-        post.title = title;
-        post.content = content;
-        post.author = user;
-        post.tags = [];
-        this.addTagsToPost(post, tagsString);
-        return PostExceptionHandler.createPostInRepositoryExceptionHandler(post, this.postRepository, this.logger);
+    async createPost(createPostDto:CreatePostDto, user:User, post : Post):Promise<Post>{
+        try{
+            await post.save();
+            delete post.author;
+            return await post;
+        }catch(err){
+            this.logger.error(`Failed to create post with id = ${post.postId}`, err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 
     async getPostById(id:number, user:User){
-        return PostExceptionHandler.getPostByIdInRepositoryExceptionHandler(this.postRepository, user,id, this.logger);
+        let result
+        try{
+            result = await this.postRepository.findOne({where : {postId : id}});
+        }catch(err){
+            this.logger.error("Failed to get post from repository", err.stack);
+            throw new InternalServerErrorException()
+        }
+        if(!result){
+            this.logger.verbose(`User "${user.username} tried to get post with id = ${id} but there is not any post with this id."`)
+            throw new NotFoundException(`there is no post with id = ${id}`)
+        }
+        return result;
     }
     async getPostByIdForEditOrDelete(id:number, user:User){
         let result
@@ -69,9 +77,37 @@ export class PostRepository{
     }
 
     async getPostsPaginated(user : User, query : PaginateQuery){
-        return PostExceptionHandler.getPaginatedPostInServiceExceptionHandler(this.postRepository, user, query, this.logger);
+        let result;
+        try{
+            result =  await paginate(query, this.postRepository, {
+                loadEagerRelations: true,
+                sortableColumns: ['postId', 'publicationDate', 'title', 'content', "tags.content"],
+                nullSort: 'last',
+                defaultSortBy: [['postId', 'DESC']],
+                searchableColumns: ['title', 'content'],
+                // select: ['postId', 'publicationDate', 'title', 'content', 'authorId', "tags.content"],
+                filterableColumns: {
+                'tags.content': [FilterOperator.IN],
+                loadEagerRelations: true,
+                },
+            })
+            this.logger.verbose(`"${user.username}" got paginated posts.`)
+            return result;
+        }
+        catch(err){
+            this.logger.error("Failed to get paginated posts.", err.stack)
+            throw new InternalServerErrorException()
+        }
     }
     async getPosts(user : User){
-        return PostExceptionHandler.getPostsInServiceExceptionHandler(this.postRepository, user, this.logger);
+        let result;
+        try{
+            result = await this.postRepository.find({relations : ["tags"]});
+            this.logger.verbose(`"${user.username}" got posts.`)
+            return result
+        }catch(err){
+            this.logger.error("Failed to get posts.", err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 }

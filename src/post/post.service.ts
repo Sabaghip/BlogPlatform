@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {  Paginated, PaginateQuery } from 'nestjs-paginate';
-import { PostExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
@@ -14,8 +13,16 @@ export class PostService {
         private postRepository : PostRepository,
     ){}
 
-    async createPost(createPostDto : CreatePostDto, user:User, tags:string): Promise<Post>{
-        return await this.postRepository.createPost(createPostDto, user, tags);
+    async createPost(createPostDto : CreatePostDto, user:User, tagsString:string): Promise<Post>{
+        const {title, content} = createPostDto;
+        const post = new Post();
+        post.title = title;
+        post.content = content;
+        post.author = user;
+        post.tags = [];
+        await post.save();
+        this.postRepository.addTagsToPost(post, tagsString);
+        return await this.postRepository.createPost(createPostDto, user,post);
     }
 
     async deletePost(id:number, user:User):Promise<Post>{
@@ -39,6 +46,13 @@ export class PostService {
         post.content = content;
         post.tags = [];
         this.postRepository.addTagsToPost(post, tagsString);
-        return PostExceptionHandler.editPostsInServiceExceptionHandler(post, id, this.logger);
+        try{
+            await post.save();
+            delete post.author;
+            return post;
+        }catch(err){
+            this.logger.error(`Failed to edit post with id = ${id}`, err.stack)
+            throw new InternalServerErrorException()
+        }
     }
 }

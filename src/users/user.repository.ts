@@ -1,10 +1,10 @@
-import { Logger } from "@nestjs/common";
+import { BadRequestException, HttpException, InternalServerErrorException, Logger, UseFilters } from "@nestjs/common";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpOrSignInDto } from "./dto/signUpOrSignIn.dto";
 import { User } from "./user.entity";
 import { UserRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
-import { UserExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
+import { AppExceptionFilter } from "../ExceptionHandler/ExceptionHandler";
 import { datasourceConfig } from "../config/DataSourceConfig";
 
 
@@ -29,15 +29,25 @@ export class UserRepository{
         user.username = username,
         user.password = await this.hashPassword(password, user.salt);
         user.role = UserRoles.USER;
-        await UserExceptionHandler.signUpInRepositoryExceptionHandler(user, this.userRepository, signUpDto, this.logger);
+        await this.userRepository.save(user);
+        return;
     }
 
     async signIn(signInDto : SignUpOrSignInDto):Promise<User>{
-        const {username, password} = signInDto;
-        return UserExceptionHandler.signInInRepositoryExceptionHandler(this, signInDto, this.logger);
+        let user;
+        user = await this.findOne(signInDto.username)
+        if(user && await user.validatePassword(signInDto.password)){
+            return user;
+        }
+        return null
     } 
 
     async hashPassword(password : string, salt : string) : Promise<string>{
-        return UserExceptionHandler.hashPasswordExceptionHnadler(password, salt, this.logger);
+        try{
+            return await bcrypt.hash(password, salt);
+        }catch(err){
+            this.logger.error(`Failed to hash password.`, err.stack);
+            throw new InternalServerErrorException("Error in hashing password.");
+        }
     }
 }
