@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Logger, Param, ParseIntPipe, Patch, Post, UseGuards, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { CommentExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { GetUser } from '../post/decorators/getUser.decorator';
 import { User } from '../users/user.entity';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/createComment.dto';
+import { CommentPipe } from './pipes/comment.pipe';
+
 
 @Controller('comment')
 @UseGuards(AuthGuard())
@@ -16,27 +17,31 @@ export class CommentController {
     
     @Post("/:postid")
     createComment(
-        @Body(ValidationPipe) createCommentDto : CreateCommentDto,
+        @Body(CommentPipe) createCommentDto : CreateCommentDto,
         @Param("postid", new ParseIntPipe) postid : number,
         @GetUser() user : User, 
         ){
-            return CommentExceptionHandler.createCommentExceptionHandler(this.commentService, user, createCommentDto, postid, this.logger);
+            this.logger.verbose(`"${user.username}" trying to create a comment.`)
+            return this.commentService.createComment(createCommentDto, postid, user);
         }
     
     @Patch("/:id")
     editComment(
         @Param("id", new ParseIntPipe) id:number,
         @GetUser() user : User,
-        @Body(ValidationPipe) createCommentDto : CreateCommentDto,
+        @Body(CommentPipe) createCommentDto : CreateCommentDto,
     ){
-        return CommentExceptionHandler.editCommentExceptionHandler(this.commentService, user, id, createCommentDto, this.logger);
+        this.logger.verbose(`"${user.username}" trying to edit a comment.`)
+        return this.commentService.editComment(id,  createCommentDto ,user);
+        
     }
 
     @Delete("/:id")
     deleteComment(
         @Param("id", ParseIntPipe) id : number,
         @GetUser() user : User,
-        ){
-            return CommentExceptionHandler.deleteCommentExceptionHandler(this.commentService, user, id, this.logger);
+    ){
+        this.logger.verbose(`"${user.username}" trying to delete a comment.`)
+        return this.commentService.deleteComment(id, user);     
     }
 }

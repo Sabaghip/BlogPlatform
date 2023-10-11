@@ -1,5 +1,4 @@
 import { Logger, NotFoundException } from "@nestjs/common";
-import { CommentExceptionHandler } from "../ExceptionHandler/ExceptionHandler";
 import { Post } from "../post/post.entity";
 import { User } from "../users/user.entity";
 import { UserRoles } from "../users/userRoles.enum";
@@ -25,7 +24,9 @@ export class CommentRepository{
         comment.author = user;
         comment.content = content;
         comment.post = post;
-        return CommentExceptionHandler.createCommentInRepositoryExceptionHandler(comment, this.logger);
+        await comment.save();
+        delete comment.author
+        return comment;
     }
 
     async getCommentByIdForDelete(id:number, user:User):Promise<Comment>{
@@ -59,11 +60,14 @@ export class CommentRepository{
         const { content } = createCommentDto;
         const comment = await this.getCommentByIdForEdit(id, user);
         comment.content = content;
-        return CommentExceptionHandler.editCommentInRepositoryExceptionHandler(comment, this.logger);
+        await comment.save();
+        delete comment.author
+        return comment;
     }
 
     async deleteComment(id, user : User){
         const comment = await this.getCommentByIdForDelete(id, user);
-        return CommentExceptionHandler.deleteCommentInRepositoryExceptionHandler(this.commentRepository, id, this.logger);
+        await this.commentRepository.delete({id})
+        return;
     }
 }
