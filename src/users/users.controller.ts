@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe, UseGuards, Req, Logger, UseFilters } from '@nestjs/common';
+import { Body, Controller, Post,  Logger } from '@nestjs/common';
 import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
 import { SignInOrSignUpPipe } from './pipes/signInOrSignUpPipe';
 import { UsersService } from './users.service';

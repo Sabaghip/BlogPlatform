@@ -1,6 +1,6 @@
 import { ArgumentMetadata, BadRequestException, PipeTransform } from "@nestjs/common";
 import { plainToInstance } from "class-transformer";
-import { isString, validate } from "class-validator";
+import { validate } from "class-validator";
 
 export class postPipe implements PipeTransform{
     async transform(value: any, { metatype }: ArgumentMetadata) {

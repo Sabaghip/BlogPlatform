@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, ValidationPipe, Param, ParseIntPipe, Delete, Patch, Logger, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Param, ParseIntPipe, Delete, Patch, Logger, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { User } from '../users/user.entity';

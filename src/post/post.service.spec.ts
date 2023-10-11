@@ -3,7 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { PostRepository } from './post.repository';
 import { PostService } from './post.service';
 import { Post } from './post.entity';
-import { BadRequestException } from '@nestjs/common';
 import { User } from '../users/user.entity';
 
 describe('UsersService', () => {

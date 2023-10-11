@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PostExceptionHandler } from '../ExceptionHandler/ExceptionHandler';
 import { BadRequestException } from '@nestjs/common';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { PostController } from './post.controller';
 import { PostService } from './post.service';
 import { PostRepository } from './post.repository';
@@ -21,7 +20,6 @@ describe('PostsController', () => {
         PostController,
         PostService,
         PostRepository,
-        PostExceptionHandler,
         PassportModule
       ],
     }).compile();
@@ -33,11 +31,11 @@ describe('PostsController', () => {
   describe("create post", ()=>{
     it("create post successfully", async()=>{
         const post = new Post();
-        PostExceptionHandler.createPostExceptionHandler = jest.fn().mockReturnValue(post);
+        //PostExceptionHandler.createPostExceptionHandler = jest.fn().mockReturnValue(post);
         expect(postController.createPost({username : "username"}, {content : "c1", title : "t1"}, `[]`)).toEqual(post);
     })
     it("create post not successfully", async()=>{
-        PostExceptionHandler.createPostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
+        //PostExceptionHandler.createPostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
         expect(postController.createPost({username : "username"}, {content : "c1", title : "t1"}, `[]`)).toThrow();
     })
   })
@@ -45,11 +43,11 @@ describe('PostsController', () => {
   describe("edit post", ()=>{
     it("edit post successfull", async()=>{
         const post = new Post();
-        PostExceptionHandler.editPostExceptionHandler = jest.fn().mockReturnValue(post);
+        //PostExceptionHandler.editPostExceptionHandler = jest.fn().mockReturnValue(post);
         expect(postController.editPost(1, new User(), {content : "c1", title : "t1"}, `[]`)).toEqual(post);
     })
     it("edit post not successfull", async()=>{
-        PostExceptionHandler.editPostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
+        //PostExceptionHandler.editPostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
         expect(postController.editPost(1, new User(), {content : "c1", title : "t1"}, `[]`)).toThrow();
     })
   })
@@ -57,11 +55,11 @@ describe('PostsController', () => {
   describe("delete post", ()=>{
     it("delete post successfull", async()=>{
         const post = new Post();
-        PostExceptionHandler.deletePostExceptionHandler = jest.fn().mockReturnValue(post);
+        //PostExceptionHandler.deletePostExceptionHandler = jest.fn().mockReturnValue(post);
         expect(postController.deletePost(1, new User())).toEqual(post);
     })
     it("delete post not successfull", async()=>{
-        PostExceptionHandler.deletePostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
+        //PostExceptionHandler.deletePostExceptionHandler = jest.fn().mockReturnValue(BadRequestException);
         expect(postController.deletePost(1, new User())).toThrow();
     })
   })

@@ -1,10 +1,9 @@
-import { BadRequestException, HttpException, InternalServerErrorException, Logger, UseFilters } from "@nestjs/common";
+import { InternalServerErrorException, Logger } from "@nestjs/common";
 import { DataSource, EntityRepository, Repository } from "typeorm";
 import { SignUpOrSignInDto } from "./dto/signUpOrSignIn.dto";
 import { User } from "./user.entity";
 import { UserRoles } from "./userRoles.enum";
 import * as bcrypt from "bcrypt";
-import { AppExceptionFilter } from "../ExceptionHandler/ExceptionHandler";
 import { datasourceConfig } from "../config/DataSourceConfig";
 
 
