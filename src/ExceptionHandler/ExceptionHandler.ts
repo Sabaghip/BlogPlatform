@@ -1,6 +1,7 @@
 import { HttpStatus, InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { HttpExceptionWithData } from "./Exceptions";
 
 @Catch(HttpException)
 export class AppExceptionFilter implements ExceptionFilter {
@@ -9,8 +10,10 @@ export class AppExceptionFilter implements ExceptionFilter {
         if(exception instanceof InternalServerErrorException){
             this.logger.error(exception.message, exception.stack)
         }
-        else if(exception instanceof UnauthorizedException){
-            this.logger.verbose(`Someone tried to sign in with invalid creditionals.`)
+        else if(exception instanceof HttpExceptionWithData){
+            if(exception.logger){
+                exception.logger.verbose(exception.data)
+            }
         }
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
