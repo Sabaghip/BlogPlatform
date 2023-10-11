@@ -13,14 +13,24 @@ export class CommentService {
     ){}
 
     async createComment(createCommentDto : CreateCommentDto, postid : number, user : User):Promise<Comment>{
-        return await this.commentRepository.createComment(createCommentDto, await this.postRepository.getPostById(postid, user), user);
+        let post = await this.postRepository.getPostById(postid, user);
+        const { content } = createCommentDto;
+        const comment = new Comment();
+        comment.author = user;
+        comment.content = content;
+        comment.post = post;
+        return await this.commentRepository.save(comment);
     }
 
     async editComment(id : number, createCommentDto : CreateCommentDto,  user : User):Promise<Comment>{
-        return await this.commentRepository.editComment(createCommentDto, id, user);
+        const { content } = createCommentDto;
+        const comment = await this.commentRepository.getCommentByIdForEdit(id, user);
+        comment.content = content;
+        return await this.commentRepository.save(comment);
     }
 
     async deleteComment(id : number, user : User){
-        await this.commentRepository.deleteComment(id, user);
+        const comment = await this.commentRepository.getCommentByIdForDelete(id, user);
+        await this.commentRepository.deleteComment(comment.id);
     }
 }

@@ -18,12 +18,7 @@ export class CommentRepository{
         this.commentRepository = new Repository<Comment>(Comment, this.AppDataSource.manager);
     }
 
-    async createComment(createCommentDto : CreateCommentDto, post : Post, user : User): Promise<Comment>{
-        const { content } = createCommentDto;
-        const comment = new Comment();
-        comment.author = user;
-        comment.content = content;
-        comment.post = post;
+    async save(comment : Comment): Promise<Comment>{
         await comment.save();
         delete comment.author
         return comment;
@@ -56,17 +51,8 @@ export class CommentRepository{
         return comment;
     }
 
-    async editComment(createCommentDto : CreateCommentDto, id, user : User): Promise<Comment>{
-        const { content } = createCommentDto;
-        const comment = await this.getCommentByIdForEdit(id, user);
-        comment.content = content;
-        await comment.save();
-        delete comment.author
-        return comment;
-    }
 
-    async deleteComment(id, user : User){
-        const comment = await this.getCommentByIdForDelete(id, user);
+    async deleteComment(id){
         await this.commentRepository.delete({id})
         return;
     }
