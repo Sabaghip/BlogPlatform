@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, UnauthorizedException, UseFilters } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { HttpExceptionWithData } from 'src/ExceptionHandler/Exceptions';
+import { HttpExceptionWithData } from '../ExceptionHandler/Exceptions';
 import { AppExceptionFilter } from '../ExceptionHandler/ExceptionHandler';
 import { SignUpOrSignInDto } from './dto/signUpOrSignIn.dto';
 import { JwtPayload } from './Jwt-Payload.Interface';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './users.repository';
 
 @Injectable()
 @UseFilters(AppExceptionFilter)

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './users.repository';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { User } from './user.entity';
@@ -22,13 +22,14 @@ describe('UsersRepository', () => {
 
   describe("signIn", ()=>{
     it("sign in successfuly", ()=>{
-      usersRepository.findOne = jest.fn().mockReturnValue(new User)
-      expect(usersRepository.signIn(mockCreditionDto)).resolves.not.toThrow();
+      let user = new User;
+      usersRepository.findOne = jest.fn().mockResolvedValue(user)
+      expect(usersRepository.signIn(mockCreditionDto)).resolves.toEqual(user);
     })
 
     it("sign in not successfuly", ()=>{
-      usersRepository.findOne = jest.fn().mockReturnValue(BadRequestException)
-      expect(usersRepository.signIn(mockCreditionDto)).resolves.toThrow();
+      usersRepository.findOne = jest.fn().mockResolvedValue(BadRequestException)
+      expect(usersRepository.signIn(mockCreditionDto)).toThrow();
     })
   })
 });

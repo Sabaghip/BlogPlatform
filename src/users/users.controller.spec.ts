@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { UserRepository } from './user.repository';
+import { UserRepository } from './users.repository';
 import { JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
+import { BadRequestException, HttpException } from '@nestjs/common';
+import { User } from './user.entity';
 
 describe('UsersController', () => {
   let userController : UsersController;
@@ -17,7 +19,8 @@ describe('UsersController', () => {
         UsersController,
         UsersService,
         UserRepository,
-        PassportModule
+        PassportModule,
+        User
       ],
     }).compile();
     userController = module.get<UsersController>(UsersController);
@@ -27,18 +30,22 @@ describe('UsersController', () => {
 
   describe("signup", ()=>{
     it("signup successfull", async()=>{
+        userService.signUp = jest.fn().mockReturnValue(null)
         expect(userController.signUp({username : "username", password : "password"})).toBeNull();
     })
     it("signup not successfull", async()=>{
+      userService.signUp = jest.fn().mockReturnValue(BadRequestException)
         expect(userController.signUp({username : "username", password : "wrongPassword"})).toThrow();
     })
   })
 
   describe("signin", ()=>{
     it("signin successfull", async()=>{
+      userService.signIn = jest.fn().mockReturnValue(null)
         expect(userController.signIn({username : "username", password : "password"})).toBeNull();
     })
     it("signin not successfull", async()=>{
+      userService.signIn = jest.fn().mockReturnValue(BadRequestException)
         expect(userController.signIn({username : "username", password : "wrongPassword"})).toThrow();
     })
   })
