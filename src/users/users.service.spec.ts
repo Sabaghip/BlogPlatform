@@ -3,6 +3,7 @@ import { UserRepository } from './users.repository';
 import { Test } from '@nestjs/testing';
 import { JwtService } from '@nestjs/jwt';
 import { BadRequestException } from '@nestjs/common';
+import { User } from './user.entity';
 
 describe('UsersService', () => {
   let userService : UsersService;
@@ -21,23 +22,26 @@ describe('UsersService', () => {
   })
   describe("signUp", ()=>{
     it("signUp successfully", ()=>{
-        userRepository.signUp = jest.fn().mockReturnValue(null);
-        expect(userRepository.signUp({username : "username", password : "password"})).toBeNull();
+        userRepository.save = jest.fn().mockReturnValue(null);
+        expect(userService.signUp({username : "username", password : "password"})).toBeNull();
     })
     it("signUp not successfully", ()=>{
-      userRepository.signUp = jest.fn().mockReturnValue(BadRequestException);
-      expect(userRepository.signUp({username : "username", password : "invalid password"})).toThrow();
+      userRepository.save = jest.fn().mockReturnValue(BadRequestException);
+      expect(userService.signUp({username : "username", password : "invalid password"})).toThrow();
   })
   })
 
   describe("signIn", ()=>{
     it("signIn successfully", ()=>{
-        userRepository.signIn = jest.fn().mockReturnValue(null);
-        expect(userRepository.signIn({username : "username", password : "password"})).toBeNull();
+        let user = new User();
+        userRepository.findOne = jest.fn().mockReturnValue(user);
+        expect(userService.signIn({username : "username", password : "password"})).toEqual(user);
     })
     it("signIn not successfully", ()=>{
-      userRepository.signIn = jest.fn().mockReturnValue(BadRequestException);
-      expect(userRepository.signIn({username : "username", password : "wrong password"})).toThrow();
+      let user = new User();
+      userRepository.findOne = jest.fn().mockReturnValue(user);
+      user.validatePassword = jest.fn().mockReturnValue(false);
+      expect(userService.signIn({username : "username", password : "wrong password"})).toThrow();
   })
   })
 });

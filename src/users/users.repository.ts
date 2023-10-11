@@ -21,25 +21,10 @@ export class UserRepository{
         const user = await this.userRepository.find({where : {username:username}});
         return user[0];
     }
-    async signUp(signUpDto:SignUpOrSignInDto) : Promise<void>{
-        const {username, password} = signUpDto;
-        const user = new User();
-        user.salt = await bcrypt.genSalt();
-        user.username = username,
-        user.password = await this.hashPassword(password, user.salt);
-        user.role = UserRoles.USER;
+    async save(user:User) : Promise<void>{
         await this.userRepository.save(user);
         return;
     }
-
-    async signIn(signInDto : SignUpOrSignInDto):Promise<User>{
-        let user;
-        user = await this.findOne(signInDto.username)
-        if(user && await user.validatePassword(signInDto.password)){
-            return user;
-        }
-        return null
-    } 
 
     async hashPassword(password : string, salt : string) : Promise<string>{
         try{
