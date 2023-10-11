@@ -21,12 +21,12 @@ export class UsersService {
         }
         catch(err){
             if(err.code === "23505"){
-                throw new HttpExceptionWithData(new BadRequestException({message : "username is in use"}),{data : `Cannot sign up as user because username "${signUpDto.username}" is in use`}, this.logger);
+                this.logger.verbose(`Cannot sign up as user because username "${signUpDto.username}" is in use`)
+                throw new HttpExceptionWithData(new BadRequestException({message : "username is in use"}),{data : `Cannot sign up as user because username "${signUpDto.username}" is in use`});
             }else{
                 throw new InternalServerErrorException(`Failed to create new user with username = "${signUpDto.username}"`);
             }
         }
-        
     }
     async signIn(signInDto : SignUpOrSignInDto): Promise<{accessToken : string}>{
         let user;
@@ -37,7 +37,11 @@ export class UsersService {
             throw err;
         }
         if(!(user && await user.validatePassword(signInDto.password))){
-            throw new HttpExceptionWithData(new UnauthorizedException("Invalid creditionals."), {data : `Someone tried to sign in as "${signInDto.username}" with invalid creditionals.`}, this.logger)
+            user = null;
+        }
+        if(!user){
+            this.logger.verbose(`Someone tried to sign in as "${signInDto.username}" with invalid creditionals.`)
+            throw new HttpExceptionWithData(new UnauthorizedException("Invalid creditionals."), {data : `Someone tried to sign in as "${signInDto.username}" with invalid creditionals.`})
         }
         try{
             const payload : JwtPayload = { username : user.username, role : user.role };
