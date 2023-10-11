@@ -26,23 +26,23 @@ describe('UsersService', () => {
   })
   describe("create post", ()=>{
     it("create post successfully", ()=>{
-        post.save = jest.fn().mockResolvedValue(post)
+        postRepository.save = jest.fn().mockResolvedValue(post)
         expect(postService.createPost({title : "t1", content : "c1"}, new User(),"[]")).resolves.toEqual(post);
     });
     it("create post not successfully", ()=>{
-        post.save = jest.fn().mockResolvedValue(BadRequestException)
+        postRepository.save = jest.fn().mockResolvedValue(BadRequestException)
         expect(postService.createPost({title : "t1", content : "c1"}, new User(),"[]")).resolves.toThrow();
     })
   });
   describe("edit post", ()=>{
     it("edit post successfully", ()=>{
       postRepository.getPostByIdForEditOrDelete = jest.fn().mockResolvedValue(post)
-      post.save = jest.fn().mockResolvedValue(post)
+      postRepository.save = jest.fn().mockResolvedValue(post)
         expect(postService.editPost(1, {title : "t1", content : "c1"}, new User(),"[]")).resolves.toEqual(post);
     });
     it("edit post not successfully", ()=>{
       postRepository.getPostByIdForEditOrDelete = jest.fn().mockResolvedValue(BadRequestException)
-      post.save = jest.fn().mockResolvedValue(post)
+      postRepository.save = jest.fn().mockResolvedValue(post)
         expect(postService.editPost(1, {title : "t1", content : "c1"}, new User(),"[]")).resolves.toThrow();
     })
   });
@@ -54,7 +54,7 @@ describe('UsersService', () => {
     });
     it("delete post not successfully", ()=>{
       postRepository.getPostByIdForEditOrDelete = jest.fn().mockResolvedValue(BadRequestException)
-      post.save = jest.fn().mockResolvedValue(post)
+      postRepository.save = jest.fn().mockResolvedValue(post)
       expect(postRepository.deleteById(1)).resolves.toThrow();
     })
   })

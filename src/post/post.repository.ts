@@ -21,7 +21,7 @@ export class PostRepository{
         this.tagRepository = new TagRepository();
     }
 
-    async createPost(createPostDto:CreatePostDto, user:User, post : Post):Promise<Post>{
+    async save(post : Post):Promise<Post>{
         try{
             await post.save();
             delete post.author;

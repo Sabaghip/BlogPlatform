@@ -19,9 +19,9 @@ export class PostService {
         post.content = content;
         post.author = user;
         post.tags = [];
-        await post.save();
+        await await this.postRepository.save(post);
         this.postRepository.addTagsToPost(post, tagsString);
-        return await this.postRepository.createPost(createPostDto, user,post);
+        return await this.postRepository.save(post);
     }
 
     async deletePost(id:number, user:User):Promise<Post>{
@@ -46,7 +46,7 @@ export class PostService {
         post.tags = [];
         this.postRepository.addTagsToPost(post, tagsString);
         try{
-            await post.save();
+            await this.postRepository.save(post);
             delete post.author;
             return post;
         }catch(err){
