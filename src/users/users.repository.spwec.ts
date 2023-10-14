@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './users.repository';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { User } from './user.entity';
 

@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import {  Paginated, PaginateQuery } from 'nestjs-paginate';
+import { Paginated, PaginateQuery } from 'nestjs-paginate';
 import { User } from '../users/user.entity';
 import { CreatePostDto } from './dto/createPost.dto';
 import { Post } from './post.entity';
