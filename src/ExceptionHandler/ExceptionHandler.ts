@@ -29,7 +29,7 @@ export class AppExceptionFilter implements ExceptionFilter {
             ? exception.message
             : exception instanceof HttpException
             ? exception.getResponse()['message']
-            : "internal server error.";
+            : "Internal server error.";
         response
         .status(httpStatus)
         .json({

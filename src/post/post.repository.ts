@@ -69,6 +69,7 @@ export class PostRepository{
             let tag = await this.tagRepository.createTag(tagsList[i])
             post.tags.push(tag)
         }
+        await post.save()
     }
 
     async deleteById(postId){

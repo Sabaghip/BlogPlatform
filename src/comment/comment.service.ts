@@ -19,7 +19,6 @@ export class CommentService {
         comment.author = user;
         comment.content = content;
         comment.post = post;
-        post.save();
         return await this.commentRepository.save(comment);
     }
 
