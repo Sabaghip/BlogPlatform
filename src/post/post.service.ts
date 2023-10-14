@@ -19,8 +19,7 @@ export class PostService {
         post.content = content;
         post.author = user;
         post.tags = [];
-        await await this.postRepository.save(post);
-        this.postRepository.addTagsToPost(post, tagsString);
+        await this.postRepository.addTagsToPost(post, tagsString);
         return await this.postRepository.save(post);
     }
 
@@ -44,7 +43,7 @@ export class PostService {
         post.title = title;
         post.content = content;
         post.tags = [];
-        this.postRepository.addTagsToPost(post, tagsString);
+        await this.postRepository.addTagsToPost(post, tagsString);
         try{
             await this.postRepository.save(post);
             delete post.author;

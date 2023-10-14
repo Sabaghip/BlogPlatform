@@ -17,7 +17,7 @@ export class CommentRepository{
 
     async save(comment : Comment): Promise<Comment>{
         await comment.save();
-        delete comment.author
+        delete comment.author;
         return comment;
     }
 
