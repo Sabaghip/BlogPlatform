@@ -2,7 +2,6 @@ import { InternalServerErrorException, Logger, NotFoundException} from "@nestjs/
 import { User } from "../users/user.entity";
 import { UserRoles } from "../users/userRoles.enum";
 import { DataSource, EntityRepository, Repository } from "typeorm";
-import { CreatePostDto } from "./dto/createPost.dto";
 import { Post } from "./post.entity";
 import { TagRepository } from "./tag.repository";
 import { datasourceConfig } from "../config/DataSourceConfig";
@@ -32,34 +31,34 @@ export class PostRepository{
         }
     }
 
-    async getPostById(id:number, user:User){
+    async getPostById(postId:number, user:User){
         let result
         try{
-            result = await this.postRepository.findOne({where : {postId : id}});
+            result = await this.postRepository.findOne({where : {postId}});
         }catch(err){
             this.logger.error("Failed to get post from repository", err.stack);
             throw new InternalServerErrorException()
         }
         if(!result){
-            this.logger.verbose(`User "${user.username} tried to get post with id = ${id} but there is not any post with this id."`)
-            throw new NotFoundException(`there is no post with id = ${id}`)
+            this.logger.verbose(`User "${user.username} tried to get post with id = ${postId} but there is not any post with this id."`)
+            throw new NotFoundException(`there is no post with id = ${postId}`)
         }
         return result;
     }
-    async getPostByIdForEditOrDelete(id:number, user:User){
+    async getPostByIdForEditOrDelete(postId:number, user:User){
         let result
         try{
             if(user.role == UserRoles.ADMIN)
-                result = await this.postRepository.findOne({where : {postId : id}});
+                result = await this.postRepository.findOne({where : {postId}});
             else
-                result = await this.postRepository.findOne({where : {postId : id, authorId : user.id}});
+                result = await this.postRepository.findOne({where : {postId, authorId : user.id}});
         }catch(err){
             this.logger.error("Failed to get post from repository", err.stack);
             throw new InternalServerErrorException()
         }
         if(!result){
-            this.logger.verbose(`User "${user.username} tried to get post for modification with id = ${id} but there is not any post with this id."`)
-            throw new NotFoundException(`there is no post with id = ${id}`)
+            this.logger.verbose(`User "${user.username} tried to get post for modification with id = ${postId} but there is not any post with this id."`)
+            throw new NotFoundException(`there is no post with id = ${postId}`)
         }
         return result;
     }
@@ -72,8 +71,8 @@ export class PostRepository{
         }
     }
 
-    async deleteById(id){
-        await this.postRepository.delete({postId : id})
+    async deleteById(postId){
+        await this.postRepository.delete({postId})
     }
 
     async getPostsPaginated(user : User, query : PaginateQuery){

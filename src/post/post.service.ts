@@ -24,9 +24,9 @@ export class PostService {
         return await this.postRepository.save(post);
     }
 
-    async deletePost(id:number, user:User):Promise<Post>{
-        const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
-        await this.postRepository.deleteById(id)
+    async deletePost(postId:number, user:User):Promise<Post>{
+        const post = await this.postRepository.getPostByIdForEditOrDelete(postId, user);
+        await this.postRepository.deleteById(postId)
         return post
     }
 
@@ -38,8 +38,8 @@ export class PostService {
         return this.postRepository.getPosts(user);
     }
 
-    async editPost(id:number, createPostDto:CreatePostDto, user:User, tagsString:string):Promise<Post>{
-        const post = await this.postRepository.getPostByIdForEditOrDelete(id, user);
+    async editPost(postId:number, createPostDto:CreatePostDto, user:User, tagsString:string):Promise<Post>{
+        const post = await this.postRepository.getPostByIdForEditOrDelete(postId, user);
         const { title, content } = createPostDto;
         post.title = title;
         post.content = content;
@@ -50,7 +50,7 @@ export class PostService {
             delete post.author;
             return post;
         }catch(err){
-            this.logger.error(`Failed to edit post with id = ${id}`, err.stack)
+            this.logger.error(`Failed to edit post with id = ${postId}`, err.stack)
             throw new InternalServerErrorException()
         }
     }

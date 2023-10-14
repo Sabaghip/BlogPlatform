@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Param, ParseIntPipe, Delete, Patch, Logger, Get, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Param, ParseIntPipe, Delete, Patch, Logger, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { User } from '../users/user.entity';
@@ -26,13 +26,13 @@ export class PostController {
         return this.postService.createPost(createPostDto, user, tags);
     }
 
-    @Delete("/:id")
+    @Delete("/:postid")
     deletePost(
-        @Param("id",new ParseIntPipe) id,
+        @Param("postid",new ParseIntPipe) postid,
         @GetUser() user : User,
         ){
             this.logger.verbose(`"${user.username}" trying to delete a post.`)
-            return this.postService.deletePost(id, user);
+            return this.postService.deletePost(postid, user);
     }
 
     @Get("/getPosts")
@@ -47,14 +47,14 @@ export class PostController {
         return this.postService.getPostsPaginated(user, query);
     }
 
-    @Patch("/:id")
+    @Patch("/:postid")
     editPost(
-        @Param("id",new ParseIntPipe) id,
+        @Param("postid",new ParseIntPipe) postid,
         @GetUser() user : User,
         @Body() createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tagsString : string,
         ){
             this.logger.verbose(`"${user.username}" trying to edit a post.`)
-            return this.postService.editPost(id, createPostDto, user, tagsString);
+            return this.postService.editPost(postid, createPostDto, user, tagsString);
     }
 }

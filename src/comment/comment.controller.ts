@@ -23,9 +23,9 @@ export class CommentController {
             return this.commentService.createComment(createCommentDto, postid, user);
         }
     
-    @Patch("/:id")
+    @Patch("/:commentid")
     editComment(
-        @Param("id", new ParseIntPipe) id:number,
+        @Param("commentid", new ParseIntPipe) id:number,
         @GetUser() user : User,
         @Body() createCommentDto : CreateCommentDto,
     ){
@@ -34,9 +34,9 @@ export class CommentController {
         
     }
 
-    @Delete("/:id")
+    @Delete("/:commentid")
     deleteComment(
-        @Param("id", ParseIntPipe) id : number,
+        @Param("commentid", ParseIntPipe) id : number,
         @GetUser() user : User,
     ){
         this.logger.verbose(`"${user.username}" trying to delete a comment.`)

@@ -19,18 +19,19 @@ export class CommentService {
         comment.author = user;
         comment.content = content;
         comment.post = post;
+        post.save();
         return await this.commentRepository.save(comment);
     }
 
-    async editComment(id : number, createCommentDto : CreateCommentDto,  user : User):Promise<Comment>{
+    async editComment(commentid : number, createCommentDto : CreateCommentDto,  user : User):Promise<Comment>{
         const { content } = createCommentDto;
-        const comment = await this.commentRepository.getCommentByIdForEdit(id, user);
+        const comment = await this.commentRepository.getCommentByIdForEdit(commentid, user);
         comment.content = content;
         return await this.commentRepository.save(comment);
     }
 
-    async deleteComment(id : number, user : User){
-        const comment = await this.commentRepository.getCommentByIdForDelete(id, user);
+    async deleteComment(commentid : number, user : User){
+        const comment = await this.commentRepository.getCommentByIdForDelete(commentid, user);
         await this.commentRepository.deleteComment(comment.id);
     }
 }
