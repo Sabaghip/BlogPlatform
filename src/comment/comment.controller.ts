@@ -4,8 +4,6 @@ import { GetUser } from '../post/decorators/getUser.decorator';
 import { User } from '../users/user.entity';
 import { CommentService } from './comment.service';
 import { CreateCommentDto } from './dto/createComment.dto';
-import { CommentPipe } from './pipes/comment.pipe';
-
 
 @Controller('comment')
 @UseGuards(AuthGuard())
@@ -17,7 +15,7 @@ export class CommentController {
     
     @Post("/:postid")
     createComment(
-        @Body(CommentPipe) createCommentDto : CreateCommentDto,
+        @Body() createCommentDto : CreateCommentDto,
         @Param("postid", new ParseIntPipe) postid : number,
         @GetUser() user : User, 
         ){
@@ -29,7 +27,7 @@ export class CommentController {
     editComment(
         @Param("id", new ParseIntPipe) id:number,
         @GetUser() user : User,
-        @Body(CommentPipe) createCommentDto : CreateCommentDto,
+        @Body() createCommentDto : CreateCommentDto,
     ){
         this.logger.verbose(`"${user.username}" trying to edit a comment.`)
         return this.commentService.editComment(id,  createCommentDto ,user);

@@ -2,12 +2,13 @@
 FROM node:18
 
 # Create app directory
-WORKDIR G:\nodejs\Blog Platform\blog-platform
+WORKDIR "G:/nodejs/Blog-Platform/blog-platform"
 
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
 # Install app dependencies
+CMD [ "rm", "package-lock.json" ]
 RUN npm install
 
 # Bundle app source
@@ -17,4 +18,5 @@ COPY . .
 RUN npm run build
 
 # Start the server using the production build
+
 CMD [ "npm", "run", "start:dev" ]

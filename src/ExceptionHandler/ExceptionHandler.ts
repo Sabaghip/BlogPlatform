@@ -1,6 +1,7 @@
 import { HttpStatus, InternalServerErrorException, Logger } from "@nestjs/common";
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { HttpExceptionWithData } from "./Exceptions";
 
 @Catch(HttpException)
 export class AppExceptionFilter implements ExceptionFilter {
@@ -24,8 +25,10 @@ export class AppExceptionFilter implements ExceptionFilter {
         path: request.url,
         };
         const message =
-        exception instanceof HttpException
+        exception instanceof HttpExceptionWithData
             ? exception.message
+            : exception instanceof HttpException
+            ? exception.getResponse()['message']
             : "internal server error.";
         response
         .status(httpStatus)

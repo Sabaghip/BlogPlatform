@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards, Param, ParseIntPipe, Delete, Patch, Logger, Get } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Param, ParseIntPipe, Delete, Patch, Logger, Get, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Paginate, PaginateQuery } from 'nestjs-paginate';
 import { User } from '../users/user.entity';
@@ -7,7 +7,6 @@ import { GetUser } from './decorators/getUser.decorator';
 import { TagsPipe } from './Pipes/tags.pipe';
 import { Post as PostEntity} from './post.entity';
 import { PostService } from './post.service';
-import { postPipe } from './Pipes/post.pipe';
 
 @Controller('post')
 @UseGuards(AuthGuard())
@@ -20,7 +19,7 @@ export class PostController {
     @Post("")
     createPost(
         @GetUser() user,
-        @Body(postPipe)createPostDto : CreatePostDto,
+        @Body()createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tags : string,
     ) : Promise<PostEntity>{
         this.logger.verbose(`"${user.username}" trying to create a post.`)
@@ -52,7 +51,7 @@ export class PostController {
     editPost(
         @Param("id",new ParseIntPipe) id,
         @GetUser() user : User,
-        @Body(postPipe) createPostDto : CreatePostDto,
+        @Body() createPostDto : CreatePostDto,
         @Body("tags", TagsPipe) tagsString : string,
         ){
             this.logger.verbose(`"${user.username}" trying to edit a post.`)
