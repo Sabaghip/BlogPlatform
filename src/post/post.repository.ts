@@ -26,7 +26,7 @@ export class PostRepository{
             delete post.author;
             return await post;
         }catch(err){
-            this.logger.error(`Failed to create post with id = ${post.postId}`, err.stack)
+            this.logger.error(`Failed to create post with id = ${post.id}`, err.stack)
             throw new InternalServerErrorException()
         }
     }
@@ -34,7 +34,7 @@ export class PostRepository{
     async getPostById(postId:number, user:User){
         let result
         try{
-            result = await this.postRepository.findOne({where : {postId}});
+            result = await this.postRepository.findOne({where : {id: postId}});
         }catch(err){
             this.logger.error("Failed to get post from repository", err.stack);
             throw new InternalServerErrorException()
@@ -49,9 +49,9 @@ export class PostRepository{
         let result
         try{
             if(user.role == UserRoles.ADMIN)
-                result = await this.postRepository.findOne({where : {postId}});
+                result = await this.postRepository.findOne({where : {id: postId}});
             else
-                result = await this.postRepository.findOne({where : {postId, authorId : user.id}});
+                result = await this.postRepository.findOne({where : {id: postId, authorId : user.id}});
         }catch(err){
             this.logger.error("Failed to get post from repository", err.stack);
             throw new InternalServerErrorException()
@@ -73,7 +73,7 @@ export class PostRepository{
     }
 
     async deleteById(postId){
-        await this.postRepository.delete({postId})
+        await this.postRepository.delete({id: postId})
     }
 
     async getPostsPaginated(user : User, query : PaginateQuery){
@@ -81,9 +81,9 @@ export class PostRepository{
         try{
             result =  await paginate(query, this.postRepository, {
                 loadEagerRelations: true,
-                sortableColumns: ['postId', 'publicationDate', 'title', 'content', "tags.content"],
+                sortableColumns: ['id', 'publicationDate', 'title', 'content', "tags.content"],
                 nullSort: 'last',
-                defaultSortBy: [['postId', 'DESC']],
+                defaultSortBy: [['id', 'DESC']],
                 searchableColumns: ['title', 'content'],
                 // select: ['postId', 'publicationDate', 'title', 'content', 'authorId', "tags.content"],
                 filterableColumns: {

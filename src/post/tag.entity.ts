@@ -9,14 +9,14 @@ export class Tag extends BaseEntity{
     @Column()
     content : string;
     
-    @ManyToMany(type => Post, post => post.postId)
+    @ManyToMany(type => Post, post => post.id)
     @JoinTable({name : "post_tag", joinColumn: {
         name: 'tagId',
         referencedColumnName: 'id',
       },
       inverseJoinColumn: {
-        name: 'postId',
-        referencedColumnName: 'postId',
+        name: 'id',
+        referencedColumnName: 'id',
       },})
     posts : Post[]
 }

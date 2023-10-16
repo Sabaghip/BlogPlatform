@@ -18,8 +18,10 @@ export class CommentService {
         const comment = new Comment();
         comment.author = user;
         comment.content = content;
-        comment.post = post;
-        return await this.commentRepository.save(comment);
+        comment.postId = post.id;
+        await this.commentRepository.save(comment);
+        comment.post = await this.postRepository.getPostById(postid, user);
+        return comment;
     }
 
     async editComment(commentid : number, createCommentDto : CreateCommentDto,  user : User):Promise<Comment>{

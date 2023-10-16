@@ -16,7 +16,7 @@ export class PostController {
         private postService : PostService,
     ){}
 
-    @Post("")
+    @Post("/")
     createPost(
         @GetUser() user,
         @Body()createPostDto : CreatePostDto,

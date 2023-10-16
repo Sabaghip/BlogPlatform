@@ -18,4 +18,6 @@ import { JwtExpiresIn, JwtPassword } from 'src/config/Parameters';
   providers: [UsersService, UserRepository,JwtStrategy],
   exports : [JwtStrategy, PassportModule,],
 })
-export class UsersModule {}
+export class UsersModule {
+  
+}

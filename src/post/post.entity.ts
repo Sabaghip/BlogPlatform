@@ -6,7 +6,7 @@ import { Tag } from "./tag.entity";
 @Entity()
 export class Post extends BaseEntity{
     @PrimaryGeneratedColumn()
-    postId : number;
+    id : number;
 
     @Column()
     title : string;
@@ -29,8 +29,8 @@ export class Post extends BaseEntity{
 
     @ManyToMany(type => Tag, tag => tag.id, {eager : true})
     @JoinTable({name : "post_tag", joinColumn: {
-        name: 'postId',
-        referencedColumnName: 'postId',
+        name: 'id',
+        referencedColumnName: 'id',
       },
       inverseJoinColumn: {
         name: 'tagId',

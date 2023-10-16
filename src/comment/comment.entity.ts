@@ -9,6 +9,9 @@ export class Comment extends BaseEntity{
 
     @Column()
     content : string;
+
+    @Column()
+    postId: number
     
     @ManyToOne(type => User, author => author.comments, { eager : false })
     author : User;
